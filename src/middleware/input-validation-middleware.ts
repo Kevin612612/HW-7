@@ -90,10 +90,10 @@ export const contentValidation = body('content')
 export const userIdValidation = param('userId')
     .isLength({max: 5}) //здесь я схитрил))
 
-export const usersIdExtractingFromParams = async (req: Request, res: Response, next: NextFunction) => {
+export const usersIdExtractingFromBody = async (req: Request, res: Response, next: NextFunction) => {
     const user = await usersCollection.findOne({id: req.params.userId})
     if (user) {
-        req.user = await usersRepository.findUserByLoginOrEmail(user.login)
+        req.user = await usersRepository.findUserByLoginOrEmail(user.accountData.login)
     }
     next()
 }
@@ -101,7 +101,6 @@ export const usersIdExtractingFromParams = async (req: Request, res: Response, n
 //users' login validation
 export const usersLoginValidation = body('login')
     .trim()
-    .isString()
     .isLength({min: 3, max: 10})
     .matches('^[a-zA-Z0-9_-]*$')
 
@@ -114,13 +113,11 @@ export const usersLoginValidation1 = body('loginOrEmail')
 //users' password validation
 export const usersPasswordValidation = body('password')
     .trim()
-    .isString()
     .isLength({min: 6, max: 20})
 
 //users' e-mail validation
 export const usersEmailValidation = body('email')
     .trim()
-    .isString()
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
 
 export const usersEmailValidation1 = body('loginOrEmail')

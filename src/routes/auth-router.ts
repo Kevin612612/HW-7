@@ -7,20 +7,21 @@ import {authBusinessLayer} from "../BLL/auth-BLL";
 import {
     usersLoginValidation1,
     usersEmailValidation1,
-    usersPasswordValidation
+    usersPasswordValidation, usersLoginValidation, usersEmailValidation
 } from "../middleware/input-validation-middleware";
-import {jwtService} from "../application/jwt-service";
 import {authMiddleWare} from "../middleware/authorization-middleware";
+import {userBusinessLayer} from "../BLL/users-BLL";
+import {createId} from "../application/findNonExistId";
+import {usersCollection} from "../repositories/mongodb";
 
 
 export const authRouter = Router({})
 
-//AUTH
+//login
 authRouter.post('/login',
     oneOf([usersLoginValidation1, usersEmailValidation1]),
     usersPasswordValidation,
     async (req: Request, res: Response) => {
-        // debugger
         //COLLECTION of ERRORS
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -33,8 +34,7 @@ authRouter.post('/login',
             return res.status(400).json(result)
         }
         //INPUT
-        const loginOrEmail = req.body.loginOrEmail
-        const password = req.body.password
+        const {loginOrEmail, password} = req.body
         //BLL
         const userToken = await authBusinessLayer.IsUserExist(loginOrEmail, password)
         //RETURN
@@ -48,6 +48,57 @@ authRouter.post('/login',
     })
 
 
+//registration
+authRouter.post('/registration',
+    usersLoginValidation,
+    usersPasswordValidation,
+    usersEmailValidation,
+    async (req: Request, res: Response) => {
+        //COLLECTION of ERRORS
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const errs = errors.array({onlyFirstError: true})
+            const result = {
+                errorsMessages: errs.map(e => {
+                    return {message: e.msg, field: e.param}
+                })
+            }
+            return res.status(400).json(result)
+        }
+        //INPUT
+        const {login, password, email} = req.body
+        const userId = await createId(usersCollection)
+        //BLL
+        const user = await userBusinessLayer.newPostedUser(userId, login, password, email)
+        //RETURN
+        if (user) {
+            res.status(201).send(user)
+        } else {
+            res.status(400)
+        }
+    })
+
+authRouter.post('/confirm-email',
+    async (req: Request, res: Response) => {
+        //INPUT
+        const code = req.body.code
+        //BLL
+        const result = await userBusinessLayer.confirmCodeFromEmail(code)
+        //RETURN
+        res.status(204).send(result)
+    })
+
+authRouter.post('/resend-registration-code',
+    async (req: Request, res: Response) => {
+        //INPUT
+        const {loginOrEmail, password} = req.body
+        //BLL
+
+        //RETURN
+
+    })
+
+//get info about current user
 authRouter.get('/me',
     authMiddleWare,
     async (req: Request, res: Response) => {

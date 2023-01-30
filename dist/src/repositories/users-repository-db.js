@@ -14,7 +14,7 @@ exports.usersRepository = void 0;
 const mongodb_1 = require("./mongodb");
 exports.usersRepository = {
     //(1) method returns array of users
-    allUsers(searchLoginTerm, searchEmailTerm, sortBy, sortDirection, filter) {
+    allUsers(sortBy, sortDirection, filter) {
         return __awaiter(this, void 0, void 0, function* () {
             const order = (sortDirection === 'asc') ? 1 : -1;
             return yield mongodb_1.usersCollection
@@ -40,9 +40,24 @@ exports.usersRepository = {
     //(4) method returns user by loginOrEmail
     findUserByLoginOrEmail(loginOrEmail) {
         return __awaiter(this, void 0, void 0, function* () {
-            // debugger
-            const result = yield mongodb_1.usersCollection.findOne({ $or: [{ login: { $regex: loginOrEmail } }, { email: { $regex: loginOrEmail } }] });
+            const result = yield mongodb_1.usersCollection.findOne({ $or: [{ "accountData.login": { $regex: loginOrEmail } }, { "accountData.email": { $regex: loginOrEmail } }] });
             return result ? result : undefined;
+        });
+    },
+    //(5) method returns user by code
+    findUserByCode(code) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield mongodb_1.usersCollection.findOne({ "emailConfirmation.confirmationCode": code });
+            return result ? result : undefined;
+        });
+    },
+    //(6) method update status
+    updateStatus(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield mongodb_1.usersCollection.updateOne({ id: user.id }, {
+                $set: { "emailConfirmation.isConfirmed": true }
+            });
+            return result.matchedCount === 1;
         });
     },
 };

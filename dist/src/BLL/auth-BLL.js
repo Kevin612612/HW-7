@@ -26,8 +26,8 @@ exports.authBusinessLayer = {
             const user = yield users_repository_db_1.usersRepository.findUserByLoginOrEmail(loginOrEmail);
             //если такой есть то сравниваем его хэш с хэшом введенного пароля
             if (user) {
-                const passwordHash = yield bcrypt_1.default.hash(password, user.passwordSalt);
-                if (passwordHash == user.passwordHash) {
+                const passwordHash = yield bcrypt_1.default.hash(password, user.accountData.passwordSalt);
+                if (passwordHash == user.accountData.passwordHash) {
                     return yield jwt_service_1.jwtService.createJWT(user);
                 }
             }

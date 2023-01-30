@@ -1,5 +1,6 @@
 import {blogViewModel, postViewModel, userDataModel} from "../repositories/mongodb";
 
+
 //expanding type Request
 declare global {
     declare namespace Express {
@@ -33,7 +34,21 @@ export type PostsTypeSchema = { pagesCount: number, page: number, pageSize: numb
 export type userViewModel = { id: string, login: string, email: string, createdAt: Date }
 
 //data type
-export type userDataModel = { id: string, login: string, email: string, createdAt: Date, passwordSalt: string, passwordHash: string }
+export type userDataModel = {
+    id: string,
+    accountData: {
+        login: string,
+        email: string,
+        passwordSalt,
+        passwordHash,
+        createdAt: Date
+    },
+    emailConfirmation: {
+        confirmationCode: string,
+        expirationDate: Date,
+        isConfirmed: boolean,
+    },
+}
 
 //userType returned by POST-method
 export type UsersTypeSchema = { pagesCount: number, page: number, pageSize: number, totalCount: number, items: userViewModel[] }
@@ -41,10 +56,12 @@ export type UsersTypeSchema = { pagesCount: number, page: number, pageSize: numb
 
 //COMMENTS
 //view type
-export type commentViewModel = {commentatorInfo: {
+export type commentViewModel = {
+    commentatorInfo: {
         userId: string,
         userLogin: string,
-    }, id: string, content: string, createdAt: Date }
+    }, id: string, content: string, createdAt: Date
+}
 
 //data type
 export type commentDataModel = { id: string, content: string, userId: string, userLogin: string, createdAt: Date, postId: string }

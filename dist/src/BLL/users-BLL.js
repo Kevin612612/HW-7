@@ -17,71 +17,123 @@ exports.userBusinessLayer = void 0;
 const users_repository_db_1 = require("../repositories/users-repository-db");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const mongodb_1 = require("../repositories/mongodb");
-let countOfUsers = 0;
+const uuid_1 = require("uuid");
+const add_1 = __importDefault(require("date-fns/add"));
+const bussiness_service_1 = require("../bussiness/bussiness-service");
 exports.userBusinessLayer = {
     //(1) this method returns all users to router
     allUsers(pageNumber, pageSize, sortBy, sortDirection, searchLoginTerm, searchEmailTerm) {
         return __awaiter(this, void 0, void 0, function* () {
-            let filter = {};
-            if (searchLoginTerm && searchEmailTerm) {
-                filter = {
-                    $or: [{ login: { $regex: searchLoginTerm, $options: 'i' } }, {
-                            email: {
-                                $regex: searchEmailTerm,
-                                $options: 'i'
-                            }
-                        }]
-                };
-            }
-            if (searchLoginTerm && !searchEmailTerm) {
-                filter = { login: { $regex: searchLoginTerm, $options: 'i' } };
-            }
-            if (!searchLoginTerm && searchEmailTerm) {
-                filter = { email: { $regex: searchEmailTerm, $options: 'i' } };
-            }
-            if (!searchLoginTerm && !searchEmailTerm) {
-                filter = {};
-            }
-            const sortedItems = yield users_repository_db_1.usersRepository.allUsers(searchLoginTerm, searchEmailTerm, sortBy, sortDirection, filter);
+            //filter depends on if we have searchLoginTerm and/or searchEmailTerm
+            // let filter = {};
+            //
+            // switch (searchLoginTerm && searchEmailTerm) {
+            //     case (searchLoginTerm && searchEmailTerm):
+            //         filter = {
+            //             $or: [{"accountData.login": {$regex: searchLoginTerm, $options: "i"}}, {
+            //                 "accountData.email": {
+            //                     $regex: searchEmailTerm,
+            //                     $options: "i"
+            //                 }
+            //             }]
+            //         }
+            //         break;
+            //     case (searchLoginTerm && !searchEmailTerm):
+            //         filter = {"accountData.login": {$regex: searchLoginTerm, $options: "i"}}
+            //         break;
+            //     case (!searchLoginTerm && searchEmailTerm):
+            //         filter = {"accountData.email": {$regex: searchEmailTerm, $options: "i"}}
+            //         break;
+            //     case (!searchLoginTerm && !searchEmailTerm):
+            //         filter = {};
+            //         break;
+            // }
+            // x = a ? (b ? 11 : 10) : (b ? 01 : 00)
+            const filter = searchLoginTerm ? searchEmailTerm ? {
+                $or: [{
+                        "accountData.login": {
+                            $regex: searchLoginTerm,
+                            $options: "i"
+                        }
+                    }, { "accountData.email": {
+                            $regex: searchEmailTerm,
+                            $options: "i"
+                        } }]
+            } : { "accountData.login": {
+                    $regex: searchLoginTerm,
+                    $options: "i"
+                } } : searchEmailTerm ? {
+                "accountData.email": {
+                    $regex: searchEmailTerm,
+                    $options: "i"
+                }
+            } : {};
+            const sortedItems = yield users_repository_db_1.usersRepository.allUsers(sortBy, sortDirection, filter);
             const quantityOfDocs = yield mongodb_1.usersCollection.countDocuments(filter);
             return {
                 pagesCount: Math.ceil(quantityOfDocs / +pageSize),
                 page: +pageNumber,
                 pageSize: +pageSize,
                 totalCount: quantityOfDocs,
-                items: sortedItems.slice((+pageNumber - 1) * (+pageSize), (+pageNumber) * (+pageSize)).map(e => {
+                items: sortedItems.slice((+pageNumber - 1) * (+pageSize), (+pageNumber) * (+pageSize)).map(User => {
                     return {
-                        id: e.id,
-                        login: e.login,
-                        email: e.email,
-                        createdAt: e.createdAt,
+                        id: User.id,
+                        login: User.accountData.login,
+                        email: User.accountData.email,
+                        createdAt: User.accountData.createdAt
                     };
                 })
             };
         });
     },
     //(2) method creates user
-    newPostedUser(id, login, password, email) {
+    newPostedUser(userId, login, password, email) {
         return __awaiter(this, void 0, void 0, function* () {
-            countOfUsers++;
-            const idName = id ? id : countOfUsers.toString();
-            const passwordSalt = yield bcrypt_1.default.genSalt(10);
-            const passwordHash = yield bcrypt_1.default.hash(password, passwordSalt);
-            const newUser = {
-                id: idName,
-                login: login,
-                email: email,
-                passwordSalt,
-                passwordHash,
-                createdAt: new Date()
-            };
-            const result = yield users_repository_db_1.usersRepository.newPostedUser(newUser);
-            return {
-                id: newUser.id,
-                login: newUser.login,
-                email: newUser.email,
-                createdAt: newUser.createdAt
-            };
+            //check if user with such email exist
+            const user = yield mongodb_1.usersCollection.findOne({ "accountData.email": email });
+            //if he doesn't exist then we create a new user
+            if (!user) {
+                //create a salt and hash
+                const passwordSalt = yield bcrypt_1.default.genSalt(10);
+                const passwordHash = yield bcrypt_1.default.hash(password, passwordSalt);
+                const newUser = {
+                    id: userId,
+                    accountData: {
+                        login: login,
+                        email: email,
+                        passwordSalt,
+                        passwordHash,
+                        createdAt: new Date()
+                    },
+                    emailConfirmation: {
+                        confirmationCode: (0, uuid_1.v4)(),
+                        expirationDate: (0, add_1.default)(new Date(), {
+                            hours: 10,
+                            minutes: 3,
+                        }),
+                        isConfirmed: false,
+                    },
+                };
+                // put this new user in db
+                const result = yield users_repository_db_1.usersRepository.newPostedUser(newUser);
+                //send email from our account to this user's email
+                try {
+                    const sendEmail = yield bussiness_service_1.emailsManager.sendEmailConfirmationMessage(newUser.accountData.email, newUser.emailConfirmation.confirmationCode);
+                    const s = sendEmail.accepted.toString();
+                    return {
+                        id: newUser.id + ' user with email: ' + s + ' has received a letter with code',
+                        login: newUser.accountData.login,
+                        email: newUser.accountData.email,
+                        createdAt: newUser.accountData.createdAt
+                    };
+                }
+                catch (error) {
+                    return 400; //email hasn't been sent
+                }
+            }
+            else {
+                return 400; //user with such email already exists
+            }
         });
     },
     //(3) method deletes by ID
@@ -89,6 +141,17 @@ exports.userBusinessLayer = {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield users_repository_db_1.usersRepository.deleteUser(userId);
             return result ? result : 404;
+        });
+    },
+    //(4) confirm code
+    confirmCodeFromEmail(code) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield users_repository_db_1.usersRepository.findUserByCode(code);
+            if (user && user.emailConfirmation.expirationDate > new Date()) {
+                const changeStatus = yield users_repository_db_1.usersRepository.updateStatus(user);
+                return 204;
+            }
+            return 400;
         });
     },
 };

@@ -23,6 +23,7 @@ const posts_router_1 = require("./routes/posts-router");
 const comments_router_1 = require("./routes/comments-router");
 const testing_router_1 = require("./routes/testing-router");
 const mongodb_1 = require("./repositories/mongodb");
+const email_router_1 = require("./routes/email-router");
 exports.app = (0, express_1.default)();
 const corsMiddleware = (0, cors_1.default)();
 exports.app.use(corsMiddleware);
@@ -42,6 +43,7 @@ exports.app.use('/users', users_router_1.usersRouter);
 exports.app.use('/blogs', blogs_router_1.blogsRouter);
 exports.app.use('/posts', posts_router_1.postsRouter);
 exports.app.use('/comments', comments_router_1.commentsRouter);
+exports.app.use('/email', email_router_1.emailRouter);
 exports.app.use('/testing', testing_router_1.testingRouter);
 //START-APP FUNCTION
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {

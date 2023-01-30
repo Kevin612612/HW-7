@@ -11,8 +11,7 @@
 import {Request, Response, Router} from "express";
 import {userBusinessLayer} from "../BLL/users-BLL";
 import {
-    userIdValidation,
-    usersEmailValidation, usersIdExtractingFromParams,
+    usersEmailValidation,
     usersLoginValidation,
     usersPasswordValidation
 } from "../middleware/input-validation-middleware";
@@ -27,15 +26,11 @@ usersRouter.get('/',
     authorization,
     async (req: Request, res: Response) => {
         //INPUT
-        let {pageNumber, pageSize, sortBy, sortDirection, searchLoginTerm, searchEmailTerm} = req.query
-        const a = pageNumber ? +pageNumber : 1
-        const b = pageSize ? +pageSize : 10
-        const c = sortBy ? sortBy : "createdAt"
-        const d = sortDirection ? sortDirection : "desc"
-        const e = searchLoginTerm ? searchLoginTerm : null
-        const f = searchEmailTerm ? searchEmailTerm : null
+        const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = req.query;
+        const searchLoginTerm =  req.query.searchLoginTerm ? req.query.searchLoginTerm : null
+        const searchEmailTerm =  req.query.searchEmailTerm ? req.query.searchEmailTerm : null
         //BLL
-        const allUsers = await userBusinessLayer.allUsers(a, b, c, d, e, f)
+        const allUsers = await userBusinessLayer.allUsers(pageNumber, pageSize , sortBy, sortDirection, searchLoginTerm, searchEmailTerm)
         //RETURN
         res.status(200).send(allUsers)
     })
@@ -56,7 +51,7 @@ usersRouter.post('/',
             return res.status(400).json(result)
         }
         //INPUT
-        let {id, login, password, email} = req.body
+        const {id, login, password, email} = req.body
         //BLL
         const user = await userBusinessLayer.newPostedUser(id, login, password, email)
         //RETURN

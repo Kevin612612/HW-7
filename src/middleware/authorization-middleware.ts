@@ -8,7 +8,6 @@ import {usersRepository} from "../repositories/users-repository-db";
 
 
 //Basic Authorization
-
 export const authorization = (req: Request, res: Response, next: NextFunction) => {
     if (req.headers.authorization == 'Basic YWRtaW46cXdlcnR5') { //decoded in Base64 password
         next()

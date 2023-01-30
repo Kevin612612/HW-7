@@ -19,8 +19,8 @@ export const authBusinessLayer = {
         const user = await usersRepository.findUserByLoginOrEmail(loginOrEmail)
         //если такой есть то сравниваем его хэш с хэшом введенного пароля
         if (user) {
-            const passwordHash = await bcrypt.hash(password, user.passwordSalt)
-            if (passwordHash == user.passwordHash) {
+            const passwordHash = await bcrypt.hash(password, user.accountData.passwordSalt)
+            if (passwordHash == user.accountData.passwordHash) {
                 return await jwtService.createJWT(user)
             }
         }

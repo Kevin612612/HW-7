@@ -16,10 +16,12 @@ const express_validator_1 = require("express-validator");
 const auth_BLL_1 = require("../BLL/auth-BLL");
 const input_validation_middleware_1 = require("../middleware/input-validation-middleware");
 const authorization_middleware_1 = require("../middleware/authorization-middleware");
+const users_BLL_1 = require("../BLL/users-BLL");
+const findNonExistId_1 = require("../application/findNonExistId");
+const mongodb_1 = require("../repositories/mongodb");
 exports.authRouter = (0, express_1.Router)({});
-//AUTH
+//login
 exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validation_middleware_1.usersLoginValidation1, input_validation_middleware_1.usersEmailValidation1]), input_validation_middleware_1.usersPasswordValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // debugger
     //COLLECTION of ERRORS
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
@@ -32,8 +34,7 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
         return res.status(400).json(result);
     }
     //INPUT
-    const loginOrEmail = req.body.loginOrEmail;
-    const password = req.body.password;
+    const { loginOrEmail, password } = req.body;
     //BLL
     const userToken = yield auth_BLL_1.authBusinessLayer.IsUserExist(loginOrEmail, password);
     //RETURN
@@ -46,6 +47,47 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
         res.sendStatus(401);
     }
 }));
+//registration
+exports.authRouter.post('/registration', input_validation_middleware_1.usersLoginValidation, input_validation_middleware_1.usersPasswordValidation, input_validation_middleware_1.usersEmailValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //COLLECTION of ERRORS
+    const errors = (0, express_validator_1.validationResult)(req);
+    if (!errors.isEmpty()) {
+        const errs = errors.array({ onlyFirstError: true });
+        const result = {
+            errorsMessages: errs.map(e => {
+                return { message: e.msg, field: e.param };
+            })
+        };
+        return res.status(400).json(result);
+    }
+    //INPUT
+    const { login, password, email } = req.body;
+    const userId = yield (0, findNonExistId_1.createId)(mongodb_1.usersCollection);
+    //BLL
+    const user = yield users_BLL_1.userBusinessLayer.newPostedUser(userId, login, password, email);
+    //RETURN
+    if (user) {
+        res.status(201).send(user);
+    }
+    else {
+        res.status(400);
+    }
+}));
+exports.authRouter.post('/confirm-email', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //INPUT
+    const code = req.body.code;
+    //BLL
+    const result = yield users_BLL_1.userBusinessLayer.confirmCodeFromEmail(code);
+    //RETURN
+    res.status(204).send(result);
+}));
+exports.authRouter.post('/resend-registration-code', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //INPUT
+    const { loginOrEmail, password } = req.body;
+    //BLL
+    //RETURN
+}));
+//get info about current user
 exports.authRouter.get('/me', authorization_middleware_1.authMiddleWare, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).json({
         email: req.user.email,

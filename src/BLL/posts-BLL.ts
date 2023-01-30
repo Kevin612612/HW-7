@@ -19,16 +19,15 @@ import {blogsRepository} from "../repositories/blogs-repository-db";
 import {postsRepository} from "../repositories/posts-repository-db";
 import {commentsRepository} from "../repositories/comments-repository-db";
 import {commentsCollection, postsCollection} from "../repositories/mongodb";
+import {createId} from "../application/findNonExistId";
 
-let countOfPosts = 0
-let countOfComments = 0
 
 export const postBusinessLayer = {
 
     //(1) this method return all comments by postId
     async allCommentsByPostId(postId: string,
-                              pageNumber: number,
-                              pageSize: number,
+                              pageNumber: any,
+                              pageSize: any,
                               sortBy: any,
                               sortDirection: any): Promise<CommentsTypeSchema | number> {
         const foundPost = await postsRepository.findPostById(postId)
@@ -52,8 +51,9 @@ export const postBusinessLayer = {
 
     //(2) creates new comment by postId
     async newPostedCommentByPostId(postId: string, content: string, userId: string, userLogin: string): Promise<commentViewModel | number> {
-        countOfComments++
-        // const idName: string = id ? id : countOfComments.toString()
+        // countOfComments++
+        const idName: string =  await createId(commentsCollection)
+
         const foundPost = await postsRepository.findPostById(postId)
         if (foundPost) {
             const newComment = {
@@ -63,7 +63,7 @@ export const postBusinessLayer = {
                 },
                 content: content,
                 createdAt: new Date(),
-                id: countOfComments.toString(),
+                id: idName,
                 postId: postId,
             }
 
@@ -85,8 +85,8 @@ export const postBusinessLayer = {
 
 
     //(3) this method return all posts
-    async allPosts(pageNumber: number,
-                   pageSize: number,
+    async allPosts(pageNumber: any,
+                   pageSize: any,
                    sortBy: any,
                    sortDirection: any): Promise<PostsTypeSchema | number> {
 
@@ -108,14 +108,15 @@ export const postBusinessLayer = {
                         title: string,
                         shortDescription: string,
                         content: any): Promise<postViewModel | number> {
-        countOfPosts++
+
+        const idName: string =  await createId(postsCollection)
 
         const blog = await blogsRepository.findBlogById(blogId)
         if (blog) {
             const blogName = blog!.name
 
             const newPost: postViewModel = {
-                id: countOfPosts.toString(),
+                id: idName,
                 title: title,
                 shortDescription: shortDescription,
                 blogId: blogId,

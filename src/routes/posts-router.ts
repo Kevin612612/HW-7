@@ -35,10 +35,7 @@ postsRouter.get('/:postId/comments',
     async (req: Request, res: Response) => {
         //INPUT
         const postId = req.params.postId
-        const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
-        const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
-        const sortBy = req.query.sortBy ? req.query.sortBy : "createdAt";
-        const sortDirection = req.query.sortDirection ? req.query.sortDirection : "desc";
+        const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc"} = req.query;
         //BLL
         const allComments = await postBusinessLayer.allCommentsByPostId(postId, pageNumber, pageSize, sortBy, sortDirection)
         //RETURN
@@ -77,10 +74,7 @@ postsRouter.post('/:postId/comments',
 //(3) returns all posts with paging
 postsRouter.get('/', async (req: Request, res: Response) => {
     //INPUT
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
-    const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
-    const sortBy = req.query.sortBy ? req.query.sortBy : "createdAt";
-    const sortDirection = req.query.sortDirection ? req.query.sortDirection : "desc";
+    const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc"} = req.query;
     //BLL
     const allPosts = await postBusinessLayer.allPosts(pageNumber, pageSize, sortBy, sortDirection)
     //RETURN
@@ -108,7 +102,7 @@ postsRouter.post('/',
             return res.status(400).json(result)
         }
         //INPUT
-        let {blogId, title, shortDescription, content} = req.body
+        const {blogId, title, shortDescription, content} = req.body
         //BLL
         const newPost = await postBusinessLayer.newPostedPost(blogId, title, shortDescription, content)
         //RETURN
@@ -150,8 +144,7 @@ postsRouter.put('/:postId',
         }
         //INPUT
         const postId = req.params.postId
-        const blogId = req.body.blogId
-        let {title, shortDescription, content} = req.body
+        const {blogId, title, shortDescription, content} = req.body
         //BLL
         const post = await postBusinessLayer.updatePostById(postId, blogId, title, shortDescription, content)
         //RETURN

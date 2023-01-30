@@ -28,11 +28,7 @@ exports.blogsRouter = (0, express_1.Router)({});
 //(1) returns all blogs with paging
 exports.blogsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //INPUT
-    const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm : "";
-    const sortBy = req.query.sortBy ? req.query.sortBy : "createdAt";
-    const sortDirection = req.query.sortDirection ? req.query.sortDirection : "desc";
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
-    const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
+    const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", searchNameTerm = "" } = req.query;
     //BLL
     const allBlogs = yield blogs_BLL_1.blogBusinessLayer.allBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize);
     //RETURN
@@ -52,7 +48,7 @@ exports.blogsRouter.post('/', authorization_middleware_1.authorization, input_va
         return res.status(400).json(result);
     }
     //INPUT
-    let { name, description, websiteUrl, id } = req.body;
+    const { name, description, websiteUrl, id } = req.body;
     //BLL
     const result = yield blogs_BLL_1.blogBusinessLayer.newPostedBlog(name, description, websiteUrl, id);
     //RETURN
@@ -61,10 +57,7 @@ exports.blogsRouter.post('/', authorization_middleware_1.authorization, input_va
 //(3) returns all posts by specified blog
 exports.blogsRouter.get('/:blogId/posts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //INPUT
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
-    const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
-    const sortBy = req.query.sortBy ? req.query.sortBy : "createdAt";
-    const sortDirection = req.query.sortDirection ? req.query.sortDirection : "desc";
+    const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = req.query;
     const blogId = req.params.blogId;
     //BLL
     const posts = yield blogs_BLL_1.blogBusinessLayer.allPostsByBlogId(blogId, pageNumber, pageSize, sortBy, sortDirection);
@@ -86,7 +79,7 @@ exports.blogsRouter.post('/:blogId/posts', authorization_middleware_1.authorizat
     }
     //INPUT
     const blogId = req.params.blogId;
-    let { title, shortDescription, content } = req.body;
+    const { title, shortDescription, content } = req.body;
     //BLL
     const post = yield posts_BLL_1.postBusinessLayer.newPostedPost(blogId, title, shortDescription, content);
     //RETURN
@@ -116,7 +109,7 @@ exports.blogsRouter.put('/:blogId', authorization_middleware_1.authorization, in
     }
     //INPUT
     const blogId = req.params.blogId;
-    let { name, description, websiteUrl } = req.body;
+    const { name, description, websiteUrl } = req.body;
     //BLL
     const result = yield blogs_BLL_1.blogBusinessLayer.updateBlogById(blogId, name, description, websiteUrl);
     //RETURN

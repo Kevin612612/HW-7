@@ -8,6 +8,7 @@ import {postsRouter} from "./routes/posts-router";
 import {commentsRouter} from "./routes/comments-router";
 import {testingRouter} from "./routes/testing-router";
 import {runDb} from "./repositories/mongodb";
+import {emailRouter} from "./routes/email-router";
 
 
 
@@ -37,6 +38,7 @@ app.use('/users', usersRouter)
 app.use('/blogs', blogsRouter)
 app.use('/posts', postsRouter)
 app.use('/comments', commentsRouter)
+app.use('/email', emailRouter)
 
 app.use('/testing', testingRouter)
 

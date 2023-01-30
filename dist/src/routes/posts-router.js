@@ -28,10 +28,7 @@ exports.postsRouter = (0, express_1.Router)({});
 exports.postsRouter.get('/:postId/comments', input_validation_middleware_1.postIdValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //INPUT
     const postId = req.params.postId;
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
-    const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
-    const sortBy = req.query.sortBy ? req.query.sortBy : "createdAt";
-    const sortDirection = req.query.sortDirection ? req.query.sortDirection : "desc";
+    const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = req.query;
     //BLL
     const allComments = yield posts_BLL_1.postBusinessLayer.allCommentsByPostId(postId, pageNumber, pageSize, sortBy, sortDirection);
     //RETURN
@@ -63,10 +60,7 @@ exports.postsRouter.post('/:postId/comments', authorization_middleware_1.authMid
 //(3) returns all posts with paging
 exports.postsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //INPUT
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
-    const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
-    const sortBy = req.query.sortBy ? req.query.sortBy : "createdAt";
-    const sortDirection = req.query.sortDirection ? req.query.sortDirection : "desc";
+    const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = req.query;
     //BLL
     const allPosts = yield posts_BLL_1.postBusinessLayer.allPosts(pageNumber, pageSize, sortBy, sortDirection);
     //RETURN
@@ -86,7 +80,7 @@ exports.postsRouter.post('/', authorization_middleware_1.authorization, input_va
         return res.status(400).json(result);
     }
     //INPUT
-    let { blogId, title, shortDescription, content } = req.body;
+    const { blogId, title, shortDescription, content } = req.body;
     //BLL
     const newPost = yield posts_BLL_1.postBusinessLayer.newPostedPost(blogId, title, shortDescription, content);
     //RETURN
@@ -116,8 +110,7 @@ exports.postsRouter.put('/:postId', authorization_middleware_1.authorization, in
     }
     //INPUT
     const postId = req.params.postId;
-    const blogId = req.body.blogId;
-    let { title, shortDescription, content } = req.body;
+    const { blogId, title, shortDescription, content } = req.body;
     //BLL
     const post = yield posts_BLL_1.postBusinessLayer.updatePostById(postId, blogId, title, shortDescription, content);
     //RETURN

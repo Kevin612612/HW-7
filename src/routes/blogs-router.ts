@@ -31,11 +31,7 @@ export const blogsRouter = Router({})
 //(1) returns all blogs with paging
 blogsRouter.get('/', async (req: Request, res: Response) => {
     //INPUT
-    const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm : "";
-    const sortBy = req.query.sortBy ? req.query.sortBy : "createdAt";
-    const sortDirection = req.query.sortDirection ? req.query.sortDirection : "desc";
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
-    const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
+    const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc", searchNameTerm = "" } = req.query;
     //BLL
     const allBlogs = await blogBusinessLayer.allBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize)
     //RETURN
@@ -62,7 +58,7 @@ blogsRouter.post('/',
             return res.status(400).json(result)
         }
         //INPUT
-        let {name, description, websiteUrl, id} = req.body
+        const {name, description, websiteUrl, id} = req.body
         //BLL
         const result = await blogBusinessLayer.newPostedBlog(name, description, websiteUrl, id)
         //RETURN
@@ -74,10 +70,7 @@ blogsRouter.post('/',
 blogsRouter.get('/:blogId/posts',
     async (req: Request, res: Response) => {
         //INPUT
-        const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
-        const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
-        const sortBy = req.query.sortBy ? req.query.sortBy : "createdAt";
-        const sortDirection = req.query.sortDirection ? req.query.sortDirection : "desc";
+        const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = req.query;
         const blogId = req.params.blogId
         //BLL
         const posts = await blogBusinessLayer.allPostsByBlogId(blogId, pageNumber, pageSize, sortBy, sortDirection)
@@ -106,7 +99,7 @@ blogsRouter.post('/:blogId/posts',
         }
         //INPUT
         const blogId = req.params.blogId
-        let {title, shortDescription, content} = req.body
+        const {title, shortDescription, content} = req.body
         //BLL
         const post = await postBusinessLayer.newPostedPost(blogId, title, shortDescription, content)
         //RETURN
@@ -147,7 +140,7 @@ blogsRouter.put('/:blogId',
         }
         //INPUT
         const blogId = req.params.blogId
-        let {name, description, websiteUrl} = req.body
+        const {name, description, websiteUrl} = req.body
         //BLL
         const result = await blogBusinessLayer.updateBlogById(blogId, name, description, websiteUrl)
         //RETURN

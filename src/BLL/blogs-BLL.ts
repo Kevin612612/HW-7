@@ -18,8 +18,7 @@ import {
 import {blogsRepository} from "../repositories/blogs-repository-db";
 import {postsRepository} from "../repositories/posts-repository-db";
 import {blogsCollection, postsCollection} from "../repositories/mongodb";
-
-let countOfBlogs = 0
+import {createId} from "../application/findNonExistId";
 
 export const blogBusinessLayer = {
 
@@ -27,8 +26,8 @@ export const blogBusinessLayer = {
     async allBlogs(searchNameTerm: any,
                    sortBy: any,
                    sortDirection: any,
-                   pageNumber: number,
-                   pageSize: number): Promise<blogsTypeSchema> {
+                   pageNumber: any,
+                   pageSize: any): Promise<blogsTypeSchema> {
         const sortedItems = await blogsRepository.allBlogs(searchNameTerm, sortBy, sortDirection);
         const quantityOfDocs = await blogsCollection.countDocuments({name: {$regex: searchNameTerm, $options: 'i'}})
         return {
@@ -47,8 +46,8 @@ export const blogBusinessLayer = {
                         description: string,
                         websiteUrl: string,
                         id: string): Promise<blogViewModel> {
-        countOfBlogs++
-        const idName: string = id ? id : countOfBlogs.toString()
+        // countOfBlogs++
+        const idName: string = id ? id : await createId(blogsCollection)
 
         const newBlog = {
             id: idName,
@@ -73,8 +72,8 @@ export const blogBusinessLayer = {
 
     //(3) this method return all posts by blogId
     async allPostsByBlogId(blogId: string,
-                           pageNumber: number,
-                           pageSize: number,
+                           pageNumber: any,
+                           pageSize: any,
                            sortBy: any,
                            sortDirection: any): Promise<PostsTypeSchema | number> {
         const foundBlog = await blogsRepository.findBlogById(blogId)

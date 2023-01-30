@@ -15,8 +15,7 @@ const blogs_repository_db_1 = require("../repositories/blogs-repository-db");
 const posts_repository_db_1 = require("../repositories/posts-repository-db");
 const comments_repository_db_1 = require("../repositories/comments-repository-db");
 const mongodb_1 = require("../repositories/mongodb");
-let countOfPosts = 0;
-let countOfComments = 0;
+const findNonExistId_1 = require("../application/findNonExistId");
 exports.postBusinessLayer = {
     //(1) this method return all comments by postId
     allCommentsByPostId(postId, pageNumber, pageSize, sortBy, sortDirection) {
@@ -41,8 +40,8 @@ exports.postBusinessLayer = {
     //(2) creates new comment by postId
     newPostedCommentByPostId(postId, content, userId, userLogin) {
         return __awaiter(this, void 0, void 0, function* () {
-            countOfComments++;
-            // const idName: string = id ? id : countOfComments.toString()
+            // countOfComments++
+            const idName = yield (0, findNonExistId_1.createId)(mongodb_1.commentsCollection);
             const foundPost = yield posts_repository_db_1.postsRepository.findPostById(postId);
             if (foundPost) {
                 const newComment = {
@@ -52,7 +51,7 @@ exports.postBusinessLayer = {
                     },
                     content: content,
                     createdAt: new Date(),
-                    id: countOfComments.toString(),
+                    id: idName,
                     postId: postId,
                 };
                 const result = yield comments_repository_db_1.commentsRepository.newPostedComment(newComment);
@@ -88,12 +87,12 @@ exports.postBusinessLayer = {
     //(4) method creates post with specific blogId
     newPostedPost(blogId, title, shortDescription, content) {
         return __awaiter(this, void 0, void 0, function* () {
-            countOfPosts++;
+            const idName = yield (0, findNonExistId_1.createId)(mongodb_1.postsCollection);
             const blog = yield blogs_repository_db_1.blogsRepository.findBlogById(blogId);
             if (blog) {
                 const blogName = blog.name;
                 const newPost = {
-                    id: countOfPosts.toString(),
+                    id: idName,
                     title: title,
                     shortDescription: shortDescription,
                     blogId: blogId,

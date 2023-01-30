@@ -14,7 +14,7 @@ exports.blogBusinessLayer = void 0;
 const blogs_repository_db_1 = require("../repositories/blogs-repository-db");
 const posts_repository_db_1 = require("../repositories/posts-repository-db");
 const mongodb_1 = require("../repositories/mongodb");
-let countOfBlogs = 0;
+const findNonExistId_1 = require("../application/findNonExistId");
 exports.blogBusinessLayer = {
     //(1) this method transform all found data and returns them to router
     allBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize) {
@@ -33,8 +33,8 @@ exports.blogBusinessLayer = {
     //(2) method creates blog
     newPostedBlog(name, description, websiteUrl, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            countOfBlogs++;
-            const idName = id ? id : countOfBlogs.toString();
+            // countOfBlogs++
+            const idName = id ? id : yield (0, findNonExistId_1.createId)(mongodb_1.blogsCollection);
             const newBlog = {
                 id: idName,
                 name: name,

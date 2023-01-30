@@ -15,8 +15,8 @@ export const jwtService = {
         // debugger
         const payload = {
             userId: user.id,
-            login: user.login,
-            email: user.email
+            login: user.accountData.login,
+            email: user.accountData.email
         }
         const secretOrPrivateKey = process.env.JWT_secret!
         return jwt.sign(payload, secretOrPrivateKey, {expiresIn: '1h'});

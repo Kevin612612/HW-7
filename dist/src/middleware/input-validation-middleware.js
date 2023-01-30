@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tokenValidation = exports.commentValidation = exports.usersEmailValidation1 = exports.usersEmailValidation = exports.usersPasswordValidation = exports.usersLoginValidation1 = exports.usersLoginValidation = exports.usersIdExtractingFromParams = exports.userIdValidation = exports.contentValidation = exports.shortDescriptionValidation = exports.titleValidation = exports.postExtractingFromParams = exports.postIdValidation = exports.newWebSiteUrlValidation = exports.descriptionValidation = exports.nameValidation = exports.blogExtractingFromBody = exports.blogExtractingFromParams = exports.blogIdValidationInParams = exports.blogIdValidationInBody = void 0;
+exports.tokenValidation = exports.commentValidation = exports.usersEmailValidation1 = exports.usersEmailValidation = exports.usersPasswordValidation = exports.usersLoginValidation1 = exports.usersLoginValidation = exports.usersIdExtractingFromBody = exports.userIdValidation = exports.contentValidation = exports.shortDescriptionValidation = exports.titleValidation = exports.postExtractingFromParams = exports.postIdValidation = exports.newWebSiteUrlValidation = exports.descriptionValidation = exports.nameValidation = exports.blogExtractingFromBody = exports.blogExtractingFromParams = exports.blogIdValidationInParams = exports.blogIdValidationInBody = void 0;
 const express_validator_1 = require("express-validator");
 const blogs_repository_db_1 = require("../repositories/blogs-repository-db");
 const posts_repository_db_1 = require("../repositories/posts-repository-db");
@@ -81,18 +81,17 @@ exports.contentValidation = (0, express_validator_1.body)('content')
 //user validation
 exports.userIdValidation = (0, express_validator_1.param)('userId')
     .isLength({ max: 5 }); //здесь я схитрил))
-const usersIdExtractingFromParams = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const usersIdExtractingFromBody = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield mongodb_1.usersCollection.findOne({ id: req.params.userId });
     if (user) {
-        req.user = yield users_repository_db_1.usersRepository.findUserByLoginOrEmail(user.login);
+        req.user = yield users_repository_db_1.usersRepository.findUserByLoginOrEmail(user.accountData.login);
     }
     next();
 });
-exports.usersIdExtractingFromParams = usersIdExtractingFromParams;
+exports.usersIdExtractingFromBody = usersIdExtractingFromBody;
 //users' login validation
 exports.usersLoginValidation = (0, express_validator_1.body)('login')
     .trim()
-    .isString()
     .isLength({ min: 3, max: 10 })
     .matches('^[a-zA-Z0-9_-]*$');
 exports.usersLoginValidation1 = (0, express_validator_1.body)('loginOrEmail')
@@ -103,12 +102,10 @@ exports.usersLoginValidation1 = (0, express_validator_1.body)('loginOrEmail')
 //users' password validation
 exports.usersPasswordValidation = (0, express_validator_1.body)('password')
     .trim()
-    .isString()
     .isLength({ min: 6, max: 20 });
 //users' e-mail validation
 exports.usersEmailValidation = (0, express_validator_1.body)('email')
     .trim()
-    .isString()
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$');
 exports.usersEmailValidation1 = (0, express_validator_1.body)('loginOrEmail')
     .trim()
