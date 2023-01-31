@@ -51,32 +51,31 @@ export const postBusinessLayer = {
 
     //(2) creates new comment by postId
     async newPostedCommentByPostId(postId: string, content: string, userId: string, userLogin: string): Promise<commentViewModel | number> {
-        // countOfComments++
         const idName: string =  await createId(commentsCollection)
 
         const foundPost = await postsRepository.findPostById(postId)
         if (foundPost) {
             const newComment = {
+                id: idName,
+                content: content,
                 commentatorInfo: {
                     userId: userId,
                     userLogin: userLogin,
                 },
-                content: content,
                 createdAt: new Date(),
-                id: idName,
                 postId: postId,
             }
 
             const result = await commentsRepository.newPostedComment(newComment)
 
             return {
+                id: newComment.id,
+                content: newComment.content,
                 commentatorInfo: {
                     userId: newComment.commentatorInfo.userId,
                     userLogin: newComment.commentatorInfo.userLogin,
                 },
-                content: newComment.content,
                 createdAt: newComment.createdAt,
-                id: newComment.id
             }
         } else {
             return 404

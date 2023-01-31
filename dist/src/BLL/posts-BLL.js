@@ -40,29 +40,28 @@ exports.postBusinessLayer = {
     //(2) creates new comment by postId
     newPostedCommentByPostId(postId, content, userId, userLogin) {
         return __awaiter(this, void 0, void 0, function* () {
-            // countOfComments++
             const idName = yield (0, findNonExistId_1.createId)(mongodb_1.commentsCollection);
             const foundPost = yield posts_repository_db_1.postsRepository.findPostById(postId);
             if (foundPost) {
                 const newComment = {
+                    id: idName,
+                    content: content,
                     commentatorInfo: {
                         userId: userId,
                         userLogin: userLogin,
                     },
-                    content: content,
                     createdAt: new Date(),
-                    id: idName,
                     postId: postId,
                 };
                 const result = yield comments_repository_db_1.commentsRepository.newPostedComment(newComment);
                 return {
+                    id: newComment.id,
+                    content: newComment.content,
                     commentatorInfo: {
                         userId: newComment.commentatorInfo.userId,
                         userLogin: newComment.commentatorInfo.userLogin,
                     },
-                    content: newComment.content,
                     createdAt: newComment.createdAt,
-                    id: newComment.id
                 };
             }
             else {

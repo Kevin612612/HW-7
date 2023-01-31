@@ -1,19 +1,19 @@
 //Presentation Layer
 
 
-
 //login
 //registration
-//
-//
-//
+//registration-confirmation
+//resend-registration-code
+//get info about current user
+
 import {Request, Response, Router} from "express";
 import {oneOf, validationResult} from "express-validator";
 import {authBusinessLayer} from "../BLL/auth-BLL";
 import {
     usersLoginValidation1,
     usersEmailValidation1,
-    usersPasswordValidation, usersLoginValidation, usersEmailValidation
+    usersPasswordValidation, usersLoginValidation, usersEmailValidation, codeValidation
 } from "../middleware/input-validation-middleware";
 import {authMiddleWare} from "../middleware/authorization-middleware";
 import {userBusinessLayer} from "../BLL/users-BLL";
@@ -84,8 +84,21 @@ authRouter.post('/registration',
         }
     })
 
+//registration-confirmation
 authRouter.post('/registration-confirmation',
+    codeValidation,
     async (req: Request, res: Response) => {
+        //COLLECTION of ERRORS
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const errs = errors.array({onlyFirstError: true})
+            const result = {
+                errorsMessages: errs.map(e => {
+                    return {message: e.msg, field: e.param}
+                })
+            }
+            return res.status(400).json(result)
+        }
         //INPUT
         const code = req.body.code
         //BLL
@@ -94,6 +107,7 @@ authRouter.post('/registration-confirmation',
         res.status(204).send(result)
     })
 
+//resend-registration-code
 authRouter.post('/resend-registration-code',
     async (req: Request, res: Response) => {
         //INPUT

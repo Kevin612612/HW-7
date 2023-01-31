@@ -13,9 +13,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.authRouter = void 0;
 //login
 //registration
-//
-//
-//
+//registration-confirmation
+//resend-registration-code
+//get info about current user
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const auth_BLL_1 = require("../BLL/auth-BLL");
@@ -78,7 +78,19 @@ exports.authRouter.post('/registration', input_validation_middleware_1.usersLogi
         res.status(400);
     }
 }));
-exports.authRouter.post('/registration-confirmation', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+//registration-confirmation
+exports.authRouter.post('/registration-confirmation', input_validation_middleware_1.codeValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //COLLECTION of ERRORS
+    const errors = (0, express_validator_1.validationResult)(req);
+    if (!errors.isEmpty()) {
+        const errs = errors.array({ onlyFirstError: true });
+        const result = {
+            errorsMessages: errs.map(e => {
+                return { message: e.msg, field: e.param };
+            })
+        };
+        return res.status(400).json(result);
+    }
     //INPUT
     const code = req.body.code;
     //BLL
@@ -86,6 +98,7 @@ exports.authRouter.post('/registration-confirmation', (req, res) => __awaiter(vo
     //RETURN
     res.status(204).send(result);
 }));
+//resend-registration-code
 exports.authRouter.post('/resend-registration-code', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //INPUT
     const { loginOrEmail, password } = req.body;

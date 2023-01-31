@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tokenValidation = exports.commentValidation = exports.usersEmailValidation1 = exports.usersEmailValidation = exports.usersPasswordValidation = exports.usersLoginValidation1 = exports.usersLoginValidation = exports.usersIdExtractingFromBody = exports.userIdValidation = exports.contentValidation = exports.shortDescriptionValidation = exports.titleValidation = exports.postExtractingFromParams = exports.postIdValidation = exports.newWebSiteUrlValidation = exports.descriptionValidation = exports.nameValidation = exports.blogExtractingFromBody = exports.blogExtractingFromParams = exports.blogIdValidationInParams = exports.blogIdValidationInBody = void 0;
+exports.tokenValidation = exports.commentValidation = exports.codeValidation = exports.usersEmailValidation1 = exports.usersEmailValidation = exports.usersPasswordValidation = exports.usersLoginValidation1 = exports.usersLoginValidation = exports.usersIdExtractingFromBody = exports.userIdValidation = exports.contentValidation = exports.shortDescriptionValidation = exports.titleValidation = exports.postExtractingFromParams = exports.postIdValidation = exports.newWebSiteUrlValidation = exports.descriptionValidation = exports.nameValidation = exports.blogExtractingFromBody = exports.blogExtractingFromParams = exports.blogIdValidationInParams = exports.blogIdValidationInBody = void 0;
 const express_validator_1 = require("express-validator");
 const blogs_repository_db_1 = require("../repositories/blogs-repository-db");
 const posts_repository_db_1 = require("../repositories/posts-repository-db");
@@ -93,7 +93,13 @@ exports.usersIdExtractingFromBody = usersIdExtractingFromBody;
 exports.usersLoginValidation = (0, express_validator_1.body)('login')
     .trim()
     .isLength({ min: 3, max: 10 })
-    .matches('^[a-zA-Z0-9_-]*$');
+    .matches('^[a-zA-Z0-9_-]*$')
+    .custom((value) => __awaiter(void 0, void 0, void 0, function* () {
+    const isValidUser = yield users_repository_db_1.usersRepository.findUserByLoginOrEmail(value);
+    if (isValidUser)
+        throw new Error('Login already exists');
+    return true;
+}));
 exports.usersLoginValidation1 = (0, express_validator_1.body)('loginOrEmail')
     .trim()
     .isString()
@@ -117,6 +123,13 @@ exports.usersEmailValidation1 = (0, express_validator_1.body)('loginOrEmail')
     .trim()
     .isString()
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$');
+exports.codeValidation = (0, express_validator_1.body)('code')
+    .custom((value) => __awaiter(void 0, void 0, void 0, function* () {
+    const isValidCode = yield mongodb_1.usersCollection.findOne({ 'emailConfirmation.confirmationCode': value });
+    if (isValidCode)
+        throw new Error('Code already exists');
+    return true;
+}));
 //comment validation
 exports.commentValidation = (0, express_validator_1.body)('content')
     .isLength({ min: 20, max: 300 });

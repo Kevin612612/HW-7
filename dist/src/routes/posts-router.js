@@ -49,7 +49,7 @@ exports.postsRouter.post('/:postId/comments', authorization_middleware_1.authMid
     }
     //INPUT
     const userId = req.user.id;
-    const userLogin = req.user.login;
+    const userLogin = req.user.accountData.login;
     const postId = req.params.postId;
     const content = req.body.content;
     //BLL

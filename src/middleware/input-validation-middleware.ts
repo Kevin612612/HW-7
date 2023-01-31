@@ -103,6 +103,11 @@ export const usersLoginValidation = body('login')
     .trim()
     .isLength({min: 3, max: 10})
     .matches('^[a-zA-Z0-9_-]*$')
+    .custom(async value => {
+        const isValidUser = await usersRepository.findUserByLoginOrEmail(value)
+        if (isValidUser) throw new Error('Login already exists')
+        return true
+    })
 
 export const usersLoginValidation1 = body('loginOrEmail')
     .trim()
@@ -126,12 +131,17 @@ export const usersEmailValidation = body('email')
     })
 
 
-
-
 export const usersEmailValidation1 = body('loginOrEmail')
     .trim()
     .isString()
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
+
+export const codeValidation = body('code')
+    .custom(async value => {
+        const isValidCode = await usersCollection.findOne({'emailConfirmation.confirmationCode': value})
+        if (isValidCode) throw new Error('Code already exists')
+        return true
+    })
 
 
 //comment validation
