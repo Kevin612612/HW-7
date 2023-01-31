@@ -1,4 +1,7 @@
 import {emailAdapter} from "../adapters/email-adapter";
+import {usersRepository} from "../repositories/users-repository-db";
+import {v4 as uuidv4} from 'uuid'
+
 
 export const emailsManager = {
 
@@ -13,7 +16,23 @@ export const emailsManager = {
     },
 
     //some actions
-    async action() {
-        //do something
+    async sendEmailConfirmationMessageAgain(email: string) {
+        //find user
+        const user = await usersRepository.findUserByLoginOrEmail(email)
+        if (user) {
+            //create new code if old one is not confirmed yet
+            if (user?.emailConfirmation.isConfirmed === false) {
+                user.emailConfirmation.confirmationCode = uuidv4()
+                //create new code
+                const newConfirmationCode = `<h1>Thank for your registration</h1>
+        <p>To finish registration please follow the link below one more time:
+            <a href='https://hw-7-gold.vercel.app/auth/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>
+        </p>`
+                //send email with new code
+                return await this.sendEmailConfirmationMessage(email, newConfirmationCode)
+            }
+        } else {
+            return 400
+        }
     }
 }

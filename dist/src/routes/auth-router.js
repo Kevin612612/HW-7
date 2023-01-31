@@ -24,6 +24,7 @@ const authorization_middleware_1 = require("../middleware/authorization-middlewa
 const users_BLL_1 = require("../BLL/users-BLL");
 const findNonExistId_1 = require("../application/findNonExistId");
 const mongodb_1 = require("../repositories/mongodb");
+const bussiness_service_1 = require("../bussiness/bussiness-service");
 exports.authRouter = (0, express_1.Router)({});
 //login
 exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validation_middleware_1.usersLoginValidation1, input_validation_middleware_1.usersEmailValidation1]), input_validation_middleware_1.usersPasswordValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -99,11 +100,24 @@ exports.authRouter.post('/registration-confirmation', input_validation_middlewar
     res.status(204).send(result);
 }));
 //resend-registration-code
-exports.authRouter.post('/resend-registration-code', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/resend-registration-code', input_validation_middleware_1.usersEmailValidation2, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //COLLECTION of ERRORS
+    const errors = (0, express_validator_1.validationResult)(req);
+    if (!errors.isEmpty()) {
+        const errs = errors.array({ onlyFirstError: true });
+        const result = {
+            errorsMessages: errs.map(e => {
+                return { message: e.msg, field: e.param };
+            })
+        };
+        return res.status(400).json(result);
+    }
     //INPUT
-    const { loginOrEmail, password } = req.body;
+    const email = req.body;
     //BLL
+    const result = yield bussiness_service_1.emailsManager.sendEmailConfirmationMessageAgain(email);
     //RETURN
+    res.status(204).send(result);
 }));
 //get info about current user
 exports.authRouter.get('/me', authorization_middleware_1.authMiddleWare, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

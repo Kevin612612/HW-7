@@ -125,15 +125,25 @@ export const usersEmailValidation = body('email')
     .trim()
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
     .custom(async value => {
-        const isValidUser = await usersRepository.findUserByLoginOrEmail(value)
-        if (isValidUser) throw new Error('Email already exists')
+        const user = await usersRepository.findUserByLoginOrEmail(value)
+        if (user) throw new Error('Email already exists')
+        return true
+    })
+
+
+
+export const usersEmailValidation2 = body('email')
+    .trim()
+    .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
+    .custom(async value => {
+        const user = await usersRepository.findUserByLoginOrEmail(value)
+        if (user?.emailConfirmation.isConfirmed === true) throw new Error('Email already confirmed')
         return true
     })
 
 
 export const usersEmailValidation1 = body('loginOrEmail')
     .trim()
-    .isString()
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
 
 export const codeValidation = body('code')

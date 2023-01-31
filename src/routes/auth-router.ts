@@ -13,12 +13,13 @@ import {authBusinessLayer} from "../BLL/auth-BLL";
 import {
     usersLoginValidation1,
     usersEmailValidation1,
-    usersPasswordValidation, usersLoginValidation, usersEmailValidation, codeValidation
+    usersPasswordValidation, usersLoginValidation, usersEmailValidation, codeValidation, usersEmailValidation2
 } from "../middleware/input-validation-middleware";
 import {authMiddleWare} from "../middleware/authorization-middleware";
 import {userBusinessLayer} from "../BLL/users-BLL";
 import {createId} from "../application/findNonExistId";
 import {usersCollection} from "../repositories/mongodb";
+import {emailsManager} from "../bussiness/bussiness-service";
 
 
 export const authRouter = Router({})
@@ -109,13 +110,25 @@ authRouter.post('/registration-confirmation',
 
 //resend-registration-code
 authRouter.post('/resend-registration-code',
+    usersEmailValidation2,
     async (req: Request, res: Response) => {
+        //COLLECTION of ERRORS
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const errs = errors.array({onlyFirstError: true})
+            const result = {
+                errorsMessages: errs.map(e => {
+                    return {message: e.msg, field: e.param}
+                })
+            }
+            return res.status(400).json(result)
+        }
         //INPUT
-        const {loginOrEmail, password} = req.body
+        const email = req.body
         //BLL
-
+        const result = await emailsManager.sendEmailConfirmationMessageAgain(email)
         //RETURN
-
+        res.status(204).send(result)
     })
 
 //get info about current user
