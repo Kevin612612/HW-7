@@ -147,7 +147,7 @@ exports.userBusinessLayer = {
     confirmCodeFromEmail(code) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield users_repository_db_1.usersRepository.findUserByCode(code);
-            if (user && user.emailConfirmation.expirationDate > new Date() && user.emailConfirmation.isConfirmed == false) {
+            if (user && user.emailConfirmation.expirationDate > new Date() && user.emailConfirmation.isConfirmed != true) {
                 const changeStatus = yield users_repository_db_1.usersRepository.updateStatus(user);
                 return 204;
             }

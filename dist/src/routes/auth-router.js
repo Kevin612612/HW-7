@@ -79,20 +79,18 @@ exports.authRouter.post('/registration', input_validation_middleware_1.usersLogi
     }
 }));
 //registration-confirmation
-exports.authRouter.post('/registration-confirmation', 
-// codeValidation,
-(req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/registration-confirmation', input_validation_middleware_1.codeValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //COLLECTION of ERRORS
-    // const errors = validationResult(req);
-    // if (!errors.isEmpty()) {
-    //     const errs = errors.array({onlyFirstError: true})
-    //     const result = {
-    //         errorsMessages: errs.map(e => {
-    //             return {message: e.msg, field: e.param}
-    //         })
-    //     }
-    //     return res.status(400).json(result)
-    // }
+    const errors = (0, express_validator_1.validationResult)(req);
+    if (!errors.isEmpty()) {
+        const errs = errors.array({ onlyFirstError: true });
+        const result = {
+            errorsMessages: errs.map(e => {
+                return { message: e.msg, field: e.param };
+            })
+        };
+        return res.status(400).json(result);
+    }
     //INPUT
     const code = req.body.code;
     //BLL
