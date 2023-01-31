@@ -11,6 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authRouter = void 0;
+//login
+//registration
+//
+//
+//
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const auth_BLL_1 = require("../BLL/auth-BLL");
@@ -67,13 +72,13 @@ exports.authRouter.post('/registration', input_validation_middleware_1.usersLogi
     const user = yield users_BLL_1.userBusinessLayer.newPostedUser(userId, login, password, email);
     //RETURN
     if (user) {
-        res.status(201).send(user);
+        res.status(204).send(user);
     }
     else {
         res.status(400);
     }
 }));
-exports.authRouter.post('/confirm-email', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/registration-confirmation', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //INPUT
     const code = req.body.code;
     //BLL

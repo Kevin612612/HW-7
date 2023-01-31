@@ -2,7 +2,7 @@
 
 
 
-import {body, param, header} from 'express-validator'
+import {body, param, header, CustomValidator} from 'express-validator'
 import {NextFunction, Request, Response} from "express";
 import {blogsRepository} from "../repositories/blogs-repository-db";
 import {postsRepository} from "../repositories/posts-repository-db";
@@ -119,6 +119,14 @@ export const usersPasswordValidation = body('password')
 export const usersEmailValidation = body('email')
     .trim()
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
+    .custom(async value => {
+        const isValidUser = await usersRepository.findUserByLoginOrEmail(value)
+        if (isValidUser) throw new Error('Email already exists')
+        return true
+    })
+
+
+
 
 export const usersEmailValidation1 = body('loginOrEmail')
     .trim()
@@ -131,4 +139,4 @@ export const commentValidation = body('content')
     .isLength({min: 20, max: 300})
 
 //token validation
-export const tokenValidation = header('authorization')
+export const tokenValidation = header('authorization').isJWT()

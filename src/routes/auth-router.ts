@@ -1,6 +1,12 @@
 //Presentation Layer
 
 
+
+//login
+//registration
+//
+//
+//
 import {Request, Response, Router} from "express";
 import {oneOf, validationResult} from "express-validator";
 import {authBusinessLayer} from "../BLL/auth-BLL";
@@ -72,13 +78,13 @@ authRouter.post('/registration',
         const user = await userBusinessLayer.newPostedUser(userId, login, password, email)
         //RETURN
         if (user) {
-            res.status(201).send(user)
+            res.status(204).send(user)
         } else {
             res.status(400)
         }
     })
 
-authRouter.post('/confirm-email',
+authRouter.post('/registration-confirmation',
     async (req: Request, res: Response) => {
         //INPUT
         const code = req.body.code

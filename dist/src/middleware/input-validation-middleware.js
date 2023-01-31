@@ -106,7 +106,13 @@ exports.usersPasswordValidation = (0, express_validator_1.body)('password')
 //users' e-mail validation
 exports.usersEmailValidation = (0, express_validator_1.body)('email')
     .trim()
-    .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$');
+    .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
+    .custom((value) => __awaiter(void 0, void 0, void 0, function* () {
+    const isValidUser = yield users_repository_db_1.usersRepository.findUserByLoginOrEmail(value);
+    if (isValidUser)
+        throw new Error('Email already exists');
+    return true;
+}));
 exports.usersEmailValidation1 = (0, express_validator_1.body)('loginOrEmail')
     .trim()
     .isString()
@@ -115,4 +121,4 @@ exports.usersEmailValidation1 = (0, express_validator_1.body)('loginOrEmail')
 exports.commentValidation = (0, express_validator_1.body)('content')
     .isLength({ min: 20, max: 300 });
 //token validation
-exports.tokenValidation = (0, express_validator_1.header)('authorization');
+exports.tokenValidation = (0, express_validator_1.header)('authorization').isJWT();
