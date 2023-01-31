@@ -29,7 +29,7 @@ exports.emailsManager = {
     sendEmailConfirmationMessageAgain(email) {
         return __awaiter(this, void 0, void 0, function* () {
             //find user
-            const user = yield users_repository_db_1.usersRepository.findUserByLoginOrEmail(email);
+            const user = yield users_repository_db_1.usersRepository.findUserByEmail(email);
             if (user) {
                 //create new code if old one is not confirmed yet
                 if ((user === null || user === void 0 ? void 0 : user.emailConfirmation.isConfirmed) === false) {

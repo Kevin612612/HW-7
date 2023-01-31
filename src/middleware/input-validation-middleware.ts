@@ -134,9 +134,10 @@ export const usersEmailValidation = body('email')
 
 export const usersEmailValidation2 = body('email')
     .trim()
+    .isString()
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
     .custom(async value => {
-        const user = await usersRepository.findUserByLoginOrEmail(value)
+        const user = await usersRepository.findUserByEmail(value)
         if (user?.emailConfirmation.isConfirmed === true) throw new Error('Email already confirmed')
         return true
     })

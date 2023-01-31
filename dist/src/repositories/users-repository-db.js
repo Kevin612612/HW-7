@@ -44,14 +44,21 @@ exports.usersRepository = {
             return result ? result : undefined;
         });
     },
-    //(5) method returns user by code
+    //(5) method returns user by email
+    findUserByEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield mongodb_1.usersCollection.findOne({ "accountData.email": { $regex: `${email}` } });
+            return result ? result : undefined;
+        });
+    },
+    //(6) method returns user by code
     findUserByCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield mongodb_1.usersCollection.findOne({ "emailConfirmation.confirmationCode": code });
             return result ? result : undefined;
         });
     },
-    //(6) method update status
+    //(7) method update status
     updateStatus(user) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield mongodb_1.usersCollection.updateOne({ id: user.id }, {

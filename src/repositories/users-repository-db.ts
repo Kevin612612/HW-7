@@ -5,8 +5,9 @@
 //(2) newPostedUser
 //(3) deleteUser
 //(4) findUserByLoginOrEmail
-//(5) method returns user by code
-//(6) method update status
+//(5) findUserByEmail
+//(6) method returns user by code
+//(7) method update status
 
 import {userDataModel} from "../types";
 import {blogsCollection, usersCollection} from "./mongodb";
@@ -45,13 +46,19 @@ export const usersRepository = {
         return result ? result : undefined
     },
 
-    //(5) method returns user by code
+    //(5) method returns user by email
+    async findUserByEmail(email: string): Promise<userDataModel | undefined> {
+        const result = await usersCollection.findOne({"accountData.email": {$regex: `${email}`}})
+        return result ? result : undefined
+    },
+
+    //(6) method returns user by code
     async findUserByCode(code: string): Promise<userDataModel | undefined> {
         const result = await usersCollection.findOne({"emailConfirmation.confirmationCode": code})
         return result ? result : undefined
     },
 
-    //(6) method update status
+    //(7) method update status
     async updateStatus(user: userDataModel): Promise<boolean> {
         const result = await usersCollection.updateOne({id: user.id}, {
             $set: {"emailConfirmation.isConfirmed": true}
