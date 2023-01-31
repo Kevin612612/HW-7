@@ -141,7 +141,7 @@ export const userBusinessLayer = {
     //(4) confirm code
     async confirmCodeFromEmail(code: string): Promise<boolean | number> {
         const user = await usersRepository.findUserByCode(code)
-        if (user && user.emailConfirmation.expirationDate > new Date() && !user.emailConfirmation.isConfirmed) {
+        if (user && user.emailConfirmation.expirationDate > new Date() && user.emailConfirmation.isConfirmed == false) {
             const changeStatus = await usersRepository.updateStatus(user)
             return 204
         }
