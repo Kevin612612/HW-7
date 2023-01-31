@@ -124,7 +124,7 @@ authRouter.post('/registration-email-resending',
             return res.status(400).json(result)
         }
         //INPUT
-        const email = req.body
+        const email = req.body.email
         //BLL
         const result = await emailsManager.sendEmailConfirmationMessageAgain(email)
         //RETURN

@@ -113,7 +113,7 @@ exports.authRouter.post('/registration-email-resending', input_validation_middle
         return res.status(400).json(result);
     }
     //INPUT
-    const email = req.body;
+    const email = req.body.email;
     //BLL
     const result = yield bussiness_service_1.emailsManager.sendEmailConfirmationMessageAgain(email);
     //RETURN

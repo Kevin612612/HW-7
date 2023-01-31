@@ -40,7 +40,7 @@ exports.emailsManager = {
             <a href='https://hw-7-gold.vercel.app/auth/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>
         </p>`;
                     //send email with new code
-                    return yield this.sendEmailConfirmationMessage(email, newConfirmationCode);
+                    return yield email_adapter_1.emailAdapter.sendEmail(email, newConfirmationCode, "confirm registration");
                 }
             }
             else {
