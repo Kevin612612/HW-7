@@ -86,19 +86,19 @@ authRouter.post('/registration',
 
 //registration-confirmation
 authRouter.post('/registration-confirmation',
-    codeValidation,
+    // codeValidation,
     async (req: Request, res: Response) => {
         //COLLECTION of ERRORS
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            const errs = errors.array({onlyFirstError: true})
-            const result = {
-                errorsMessages: errs.map(e => {
-                    return {message: e.msg, field: e.param}
-                })
-            }
-            return res.status(400).json(result)
-        }
+        // const errors = validationResult(req);
+        // if (!errors.isEmpty()) {
+        //     const errs = errors.array({onlyFirstError: true})
+        //     const result = {
+        //         errorsMessages: errs.map(e => {
+        //             return {message: e.msg, field: e.param}
+        //         })
+        //     }
+        //     return res.status(400).json(result)
+        // }
         //INPUT
         const code = req.body.code
         //BLL
