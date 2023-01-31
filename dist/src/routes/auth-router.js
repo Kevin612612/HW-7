@@ -100,7 +100,7 @@ exports.authRouter.post('/registration-confirmation', input_validation_middlewar
     res.status(204).send(result);
 }));
 //resend-registration-code
-exports.authRouter.post('/resend-registration-code', input_validation_middleware_1.usersEmailValidation2, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/registration-email-resending', input_validation_middleware_1.usersEmailValidation2, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //COLLECTION of ERRORS
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {

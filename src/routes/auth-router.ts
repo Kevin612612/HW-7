@@ -109,7 +109,7 @@ authRouter.post('/registration-confirmation',
     })
 
 //resend-registration-code
-authRouter.post('/resend-registration-code',
+authRouter.post('/registration-email-resending',
     usersEmailValidation2,
     async (req: Request, res: Response) => {
         //COLLECTION of ERRORS
