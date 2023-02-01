@@ -155,12 +155,12 @@ export const usersEmailValidation1 = body('loginOrEmail')
 
 export const codeValidation = body('code')
     .custom(async value => {
-        const user = await usersRepository.findUserByCode( value)
+        const user = await usersRepository.findUserByCode(value)
         if (!user) throw new Error('user with this code doesn\'t exist')
         return true
     })
     .custom(async value => {
-        const user = await usersRepository.findUserByCode( value)
+        const user = await usersRepository.findUserByCode(value)
         if (user?.emailConfirmation.isConfirmed == true) throw new Error('Code already confirmed')
         return true
     })

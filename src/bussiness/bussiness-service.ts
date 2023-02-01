@@ -23,7 +23,7 @@ export const emailsManager = {
         if (user) {
             //create new code if old one is not confirmed yet
             if (user?.emailConfirmation.isConfirmed === false) {
-                user.emailConfirmation.confirmationCode = uuidv4()
+                // user.emailConfirmation.confirmationCode = uuidv4()
                 //create new code
                 const newConfirmationCode = `<h1>Thank for your registration</h1>
         <p>To finish registration please follow the link below one more time:
