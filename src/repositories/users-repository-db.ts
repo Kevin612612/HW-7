@@ -57,7 +57,8 @@ export const usersRepository = {
 
     //(6) method returns user by code
     async findUserByCode(code: string): Promise<userDataModel | undefined> {
-        const result = await usersCollection.findOne({"emailConfirmation.confirmationCode": code})
+        // const result = await usersCollection.findOne({"emailConfirmation.confirmationCode": code})
+        const result = await usersCollection.findOne({codes: {$elemMatch: {code: code}}})
         return result ? result : undefined
     },
 

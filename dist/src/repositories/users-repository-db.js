@@ -54,7 +54,8 @@ exports.usersRepository = {
     //(6) method returns user by code
     findUserByCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield mongodb_1.usersCollection.findOne({ "emailConfirmation.confirmationCode": code });
+            // const result = await usersCollection.findOne({"emailConfirmation.confirmationCode": code})
+            const result = yield mongodb_1.usersCollection.findOne({ codes: { $elemMatch: { code: code } } });
             return result ? result : undefined;
         });
     },
