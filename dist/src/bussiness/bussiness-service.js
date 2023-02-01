@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.emailsManager = void 0;
 const email_adapter_1 = require("../adapters/email-adapter");
 const users_repository_db_1 = require("../repositories/users-repository-db");
-const uuid_1 = require("uuid");
 exports.emailsManager = {
     //
     sendEmailConfirmationMessage(email, code) {
@@ -32,7 +31,7 @@ exports.emailsManager = {
             const user = yield users_repository_db_1.usersRepository.findUserByLoginOrEmail(email);
             if (user && (user === null || user === void 0 ? void 0 : user.emailConfirmation.isConfirmed) === false) {
                 //create new code if old one is not confirmed yet
-                user.emailConfirmation.confirmationCode = (0, uuid_1.v4)();
+                // user.emailConfirmation.confirmationCode = uuidv4()
                 const newConfirmationCode = `<h1>Thank for your registration</h1>
         <p>To finish registration please follow the link below one more time:
             <a href='https://hw-7-gold.vercel.app/auth/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>
