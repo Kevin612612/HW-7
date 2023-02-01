@@ -15,6 +15,7 @@ export const emailsManager = {
         return await emailAdapter.sendEmail(email, confirmationCode, "confirm registration")
     },
 
+
     //some actions
     async sendEmailConfirmationMessageAgain(email: string) {
         //find user
@@ -29,7 +30,7 @@ export const emailsManager = {
             <a href='https://hw-7-gold.vercel.app/auth/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>
         </p>`
                 //send email with new code
-                return await this.sendEmailConfirmationMessage(email, newConfirmationCode)
+                return await emailAdapter.sendEmail(email, newConfirmationCode, "confirm registration")
             }
         } else {
             return 400

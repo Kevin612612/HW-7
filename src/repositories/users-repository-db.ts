@@ -8,8 +8,9 @@
 //(5) method returns user by code
 //(6) method update status
 
+
 import {userDataModel} from "../types";
-import {blogsCollection, usersCollection} from "./mongodb";
+import {usersCollection} from "./mongodb";
 
 
 export const usersRepository = {

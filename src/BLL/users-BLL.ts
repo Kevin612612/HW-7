@@ -84,6 +84,8 @@ export const userBusinessLayer = {
     },
 
 
+
+
     //(2) method creates user
     async newPostedUser(userId: string, login: string, password: string, email: string): Promise<userViewModel | number> {
         //check if user with such email exist
