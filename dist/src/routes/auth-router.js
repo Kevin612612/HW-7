@@ -23,7 +23,6 @@ const input_validation_middleware_1 = require("../middleware/input-validation-mi
 const authorization_middleware_1 = require("../middleware/authorization-middleware");
 const users_BLL_1 = require("../BLL/users-BLL");
 const findNonExistId_1 = require("../application/findNonExistId");
-const mongodb_1 = require("../repositories/mongodb");
 const bussiness_service_1 = require("../bussiness/bussiness-service");
 exports.authRouter = (0, express_1.Router)({});
 //login
@@ -68,7 +67,7 @@ exports.authRouter.post('/registration', input_validation_middleware_1.usersLogi
     }
     //INPUT
     const { login, password, email } = req.body;
-    const userId = yield (0, findNonExistId_1.createId)(mongodb_1.usersCollection);
+    const userId = yield (0, findNonExistId_1.createUserId)();
     //BLL
     const user = yield users_BLL_1.userBusinessLayer.newPostedUser(userId, login, password, email);
     //RETURN

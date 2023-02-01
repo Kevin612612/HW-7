@@ -10,15 +10,15 @@ export const createId  = async (collection: any): Promise<string> => {
     return id.toString();
 }
 //
-// export const createUserId  = async (): Promise<string> => {
-//     let userId = 1
-//     while (userId) {
-//         let user = await usersCollection.findOne({id: userId.toString()})
-//         if (!user) {break}
-//         userId++
-//     }
-//     return userId.toString();
-// }
+export const createUserId  = async (): Promise<string> => {
+    let userId = 1
+    while (userId) {
+        let user = await usersCollection.findOne({id: userId.toString()})
+        if (!user) {break}
+        userId++
+    }
+    return userId.toString();
+}
 //
 // export const createBlogId  = async (): Promise<string> => {
 //     let blogId = 1

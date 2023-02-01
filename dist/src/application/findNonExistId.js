@@ -9,7 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createId = void 0;
+exports.createUserId = exports.createId = void 0;
+const mongodb_1 = require("../repositories/mongodb");
 const createId = (collection) => __awaiter(void 0, void 0, void 0, function* () {
     let id = 1;
     while (id) {
@@ -23,15 +24,18 @@ const createId = (collection) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.createId = createId;
 //
-// export const createUserId  = async (): Promise<string> => {
-//     let userId = 1
-//     while (userId) {
-//         let user = await usersCollection.findOne({id: userId.toString()})
-//         if (!user) {break}
-//         userId++
-//     }
-//     return userId.toString();
-// }
+const createUserId = () => __awaiter(void 0, void 0, void 0, function* () {
+    let userId = 1;
+    while (userId) {
+        let user = yield mongodb_1.usersCollection.findOne({ id: userId.toString() });
+        if (!user) {
+            break;
+        }
+        userId++;
+    }
+    return userId.toString();
+});
+exports.createUserId = createUserId;
 //
 // export const createBlogId  = async (): Promise<string> => {
 //     let blogId = 1

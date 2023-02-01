@@ -72,17 +72,17 @@ export const usersRepository = {
 
     //(8) method update code and PUSH every new code into array
     async updateCode(user: userDataModel, code: string): Promise<boolean> {
-        const result = await usersCollection.updateOne({id: user.id}, {
+        const result = await usersCollection.updateOne({"accountData.login": user.accountData.login}, {
             $set: {"emailConfirmation.confirmationCode": code}
         })
-        const result1 = await usersCollection.updateOne({id: user.id}, {
+        const result1 = await usersCollection.updateOne({"accountData.login": user.accountData.login}, {
             $push: {codes: {code: code, sentAt: new Date()}}
         })
         return result.matchedCount === 1
     },
     //(9) method update date when the FIRST CODE was sent
     async updateDate(user: userDataModel, code: string): Promise<boolean> {
-        const result = await usersCollection.updateOne({id: user.id}, {
+        const result = await usersCollection.updateOne({"accountData.login": user.accountData.login}, {
             $set: {"codes": [{code: code, sentAt: new Date()}]}
         })
         return result.matchedCount === 1

@@ -18,7 +18,7 @@ import {
 } from "../middleware/input-validation-middleware";
 import {authMiddleWare} from "../middleware/authorization-middleware";
 import {userBusinessLayer} from "../BLL/users-BLL";
-import {createId} from "../application/findNonExistId";
+import {createId, createUserId} from "../application/findNonExistId";
 import {usersCollection} from "../repositories/mongodb";
 import {emailsManager} from "../bussiness/bussiness-service";
 
@@ -75,7 +75,7 @@ authRouter.post('/registration',
         }
         //INPUT
         const {login, password, email} = req.body
-        const userId = await createId(usersCollection)
+        const userId = await createUserId()
         //BLL
         const user = await userBusinessLayer.newPostedUser(userId, login, password, email)
         //RETURN

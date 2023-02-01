@@ -49,7 +49,7 @@ exports.emailsManager = {
                 const result = yield users_repository_db_1.usersRepository.updateCode(user, newCode);
                 const newConfirmationCode = `<h1>Thank for your registration</h1>
                     <p>To finish registration please follow the link below one more time:
-                    <a href='https://hw-7-gold.vercel.app/auth/confirm-email?code=${user.codes[user.codes.length - 1].code}'>complete registration</a>
+                    <a href='https://hw-7-sigma.vercel.app/auth/confirm-email?code=${user.codes[user.codes.length - 1].code}'>complete registration</a>
                     </p>`;
                 //send email with new code
                 return yield email_adapter_1.emailAdapter.sendEmail(email, newConfirmationCode, "confirm registration");

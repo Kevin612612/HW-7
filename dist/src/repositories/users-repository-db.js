@@ -71,10 +71,10 @@ exports.usersRepository = {
     //(8) method update code and PUSH every new code into array
     updateCode(user, code) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield mongodb_1.usersCollection.updateOne({ id: user.id }, {
+            const result = yield mongodb_1.usersCollection.updateOne({ "accountData.login": user.accountData.login }, {
                 $set: { "emailConfirmation.confirmationCode": code }
             });
-            const result1 = yield mongodb_1.usersCollection.updateOne({ id: user.id }, {
+            const result1 = yield mongodb_1.usersCollection.updateOne({ "accountData.login": user.accountData.login }, {
                 $push: { codes: { code: code, sentAt: new Date() } }
             });
             return result.matchedCount === 1;
@@ -83,7 +83,7 @@ exports.usersRepository = {
     //(9) method update date when the FIRST CODE was sent
     updateDate(user, code) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield mongodb_1.usersCollection.updateOne({ id: user.id }, {
+            const result = yield mongodb_1.usersCollection.updateOne({ "accountData.login": user.accountData.login }, {
                 $set: { "codes": [{ code: code, sentAt: new Date() }] }
             });
             return result.matchedCount === 1;
