@@ -2,7 +2,7 @@
 
 
 
-import {body, param, header, CustomValidator} from 'express-validator'
+import {body, param, header} from 'express-validator'
 import {NextFunction, Request, Response} from "express";
 import {blogsRepository} from "../repositories/blogs-repository-db";
 import {postsRepository} from "../repositories/posts-repository-db";
@@ -134,7 +134,13 @@ export const usersEmailValidation = body('email')
 
 export const usersEmailValidation2 = body('email')
     .trim()
+    .isString()
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
+    .custom(async value => {
+        const user = await usersRepository.findUserByLoginOrEmail(value)
+        if (!user) throw new Error('User doesn\'t exist')
+        return true
+    })
     .custom(async value => {
         const user = await usersRepository.findUserByLoginOrEmail(value)
         if (user?.emailConfirmation.isConfirmed === true) throw new Error('Email already confirmed')
@@ -146,14 +152,15 @@ export const usersEmailValidation1 = body('loginOrEmail')
     .trim()
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
 
+
 export const codeValidation = body('code')
     .custom(async value => {
-        const user = await usersCollection.findOne({'emailConfirmation.confirmationCode': value})
+        const user = await usersRepository.findUserByCode( value)
         if (!user) throw new Error('user with this code doesn\'t exist')
         return true
     })
     .custom(async value => {
-        const user = await usersCollection.findOne({'emailConfirmation.confirmationCode': value})
+        const user = await usersRepository.findUserByCode( value)
         if (user?.emailConfirmation.isConfirmed == true) throw new Error('Code already confirmed')
         return true
     })
