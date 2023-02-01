@@ -23,10 +23,10 @@ exports.emailsManager = {
         return __awaiter(this, void 0, void 0, function* () {
             //find user by email
             const user = yield users_repository_db_1.usersRepository.findUserByLoginOrEmail(email);
-            //generate code
+            //build code
             const confirmationCode = `<h1>Thank for your registration</h1>
         <p>To finish registration please follow the link below:
-            <a href='https://hw-7-gold.vercel.app/auth/confirm-email?code=${code}'>complete registration</a>
+            <a href='https://hw-7-sigma.vercel.app/auth/registration-confirmation?code=${code}'>complete registration</a>
         </p>`;
             //write the moment when it has been sent
             const result = yield users_repository_db_1.usersRepository.updateDate(user, code);
@@ -37,19 +37,20 @@ exports.emailsManager = {
     //some actions
     sendEmailConfirmationMessageAgain(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            //find user
+            //find user by email
             const user = yield users_repository_db_1.usersRepository.findUserByLoginOrEmail(email);
             //if user exists and code is not confirmed and duration between now and moment the code's been created more minute
             if (user
+                //is not confirmed yet
                 && (user === null || user === void 0 ? void 0 : user.emailConfirmation.isConfirmed) === false
                 //   now        moment the last code has been sent         +           a minute
                 && new Date > (0, add_1.default)(user.codes[user.codes.length - 1].sentAt, { seconds: 0.1 })) {
-                //create new code
+                //build new code
                 const newCode = (0, uuid_1.v4)();
                 const result = yield users_repository_db_1.usersRepository.updateCode(user, newCode);
                 const newConfirmationCode = `<h1>Thank for your registration</h1>
                     <p>To finish registration please follow the link below one more time:
-                    <a href='https://hw-7-sigma.vercel.app/auth/confirm-email?code=${user.codes[user.codes.length - 1].code}'>complete registration</a>
+                    <a href='https://hw-7-sigma.vercel.app/auth/registration-confirmation?code=${newCode}'>complete registration</a>
                     </p>`;
                 //send email with new code
                 return yield email_adapter_1.emailAdapter.sendEmail(email, newConfirmationCode, "confirm registration");

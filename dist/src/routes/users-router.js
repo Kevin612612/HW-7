@@ -19,6 +19,7 @@ const users_BLL_1 = require("../BLL/users-BLL");
 const input_validation_middleware_1 = require("../middleware/input-validation-middleware");
 const express_validator_1 = require("express-validator");
 const authorization_middleware_1 = require("../middleware/authorization-middleware");
+const findNonExistId_1 = require("../application/findNonExistId");
 exports.usersRouter = (0, express_1.Router)({});
 //(1) return all users
 exports.usersRouter.get('/', authorization_middleware_1.authorization, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -41,9 +42,10 @@ exports.usersRouter.post('/', authorization_middleware_1.authorization, input_va
         return res.status(400).json(result);
     }
     //INPUT
-    const { id, login, password, email } = req.body;
+    const { login, password, email } = req.body;
+    const userId = yield (0, findNonExistId_1.createUserId)();
     //BLL
-    const user = yield users_BLL_1.userBusinessLayer.newPostedUser(id, login, password, email);
+    const user = yield users_BLL_1.userBusinessLayer.newPostedUser(userId, login, password, email);
     //RETURN
     res.status(201).send(user);
 }));

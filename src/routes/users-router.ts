@@ -17,6 +17,7 @@ import {
 } from "../middleware/input-validation-middleware";
 import {validationResult} from "express-validator";
 import {authorization} from "../middleware/authorization-middleware";
+import {createUserId} from "../application/findNonExistId";
 
 
 export const usersRouter = Router({})
@@ -51,9 +52,10 @@ usersRouter.post('/',
             return res.status(400).json(result)
         }
         //INPUT
-        const {id, login, password, email} = req.body
+        const {login, password, email} = req.body
+        const userId = await createUserId()
         //BLL
-        const user = await userBusinessLayer.newPostedUser(id, login, password, email)
+        const user = await userBusinessLayer.newPostedUser(userId, login, password, email)
         //RETURN
         res.status(201).send(user)
     })
