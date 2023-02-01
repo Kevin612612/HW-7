@@ -35,9 +35,9 @@ export const emailsManager = {
             const newCode = uuidv4()
             const result = await usersRepository.updateCode(user, newCode)
             const newConfirmationCode = `<h1>Thank for your registration</h1>
-        <p>To finish registration please follow the link below one more time:
-            <a href='https://hw-7-gold.vercel.app/auth/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>
-        </p>`
+                    <p>To finish registration please follow the link below one more time:
+                    <a href='https://hw-7-gold.vercel.app/auth/confirm-email?code=${user.codes[user.codes.length - 1].code}'>complete registration</a>
+                    </p>`
             //send email with new code
             return await emailAdapter.sendEmail(email, newConfirmationCode, "confirm registration")
         } else {
