@@ -87,7 +87,7 @@ export const userBusinessLayer = {
     //(2) method creates user
     async newPostedUser(userId: string, login: string, password: string, email: string): Promise<userViewModel | number> {
         //check if user with such email exist
-        const user = await usersCollection.findOne({"accountData.email": email})
+        const user = await usersRepository.findUserByEmail(email)
         //if he doesn't exist then we create a new user
         if (!user) {
             //create a salt and hash

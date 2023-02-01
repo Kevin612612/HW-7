@@ -18,7 +18,7 @@ export const emailsManager = {
     //some actions
     async sendEmailConfirmationMessageAgain(email: string) {
         //find user
-        const user = await usersRepository.findUserByEmail(email)
+        const user = await usersRepository.findUserByLoginOrEmail(email)
         if (user) {
             //create new code if old one is not confirmed yet
             if (user?.emailConfirmation.isConfirmed === false) {

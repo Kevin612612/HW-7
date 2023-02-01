@@ -90,7 +90,7 @@ exports.userBusinessLayer = {
     newPostedUser(userId, login, password, email) {
         return __awaiter(this, void 0, void 0, function* () {
             //check if user with such email exist
-            const user = yield mongodb_1.usersCollection.findOne({ "accountData.email": email });
+            const user = yield users_repository_db_1.usersRepository.findUserByEmail(email);
             //if he doesn't exist then we create a new user
             if (!user) {
                 //create a salt and hash
