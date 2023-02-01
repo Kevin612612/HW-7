@@ -30,7 +30,7 @@ export const emailsManager = {
         if (user
             && user?.emailConfirmation.isConfirmed === false
             //   now        moment the last code has been sent         +           a minute
-            &&  new Date > add(user.codes[user.codes.length - 1].sentAt, {minutes: 1})) {
+            &&  new Date > add(user.codes[user.codes.length - 1].sentAt, {seconds: 0.1})) {
             //create new code
             const newCode = uuidv4()
             const result = await usersRepository.updateCode(user, newCode)

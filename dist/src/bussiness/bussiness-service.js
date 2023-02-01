@@ -43,7 +43,7 @@ exports.emailsManager = {
             if (user
                 && (user === null || user === void 0 ? void 0 : user.emailConfirmation.isConfirmed) === false
                 //   now        moment the last code has been sent         +           a minute
-                && new Date > (0, add_1.default)(user.codes[user.codes.length - 1].sentAt, { minutes: 1 })) {
+                && new Date > (0, add_1.default)(user.codes[user.codes.length - 1].sentAt, { seconds: 0.1 })) {
                 //create new code
                 const newCode = (0, uuid_1.v4)();
                 const result = yield users_repository_db_1.usersRepository.updateCode(user, newCode);
