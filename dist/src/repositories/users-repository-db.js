@@ -67,4 +67,13 @@ exports.usersRepository = {
             return result.matchedCount === 1;
         });
     },
+    //(8) method update code
+    updateCode(user, code) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield mongodb_1.usersCollection.updateOne({ id: user.id }, {
+                $set: { "emailConfirmation.confirmationCode": code }
+            });
+            return result.matchedCount === 1;
+        });
+    },
 };

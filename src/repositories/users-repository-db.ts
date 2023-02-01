@@ -8,6 +8,7 @@
 //(5) findUserByEmail
 //(6) method returns user by code
 //(7) method update status
+//(8) method update code
 
 
 import {userDataModel} from "../types";
@@ -63,6 +64,14 @@ export const usersRepository = {
     async updateStatus(user: userDataModel): Promise<boolean> {
         const result = await usersCollection.updateOne({id: user.id}, {
             $set: {"emailConfirmation.isConfirmed": true}
+        })
+        return result.matchedCount === 1
+    },
+
+    //(8) method update code
+    async updateCode(user: userDataModel, code: string): Promise<boolean> {
+        const result = await usersCollection.updateOne({id: user.id}, {
+            $set: {"emailConfirmation.confirmationCode": code}
         })
         return result.matchedCount === 1
     },
