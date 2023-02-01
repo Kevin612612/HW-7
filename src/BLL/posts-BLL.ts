@@ -37,11 +37,11 @@ export const postBusinessLayer = {
             const quantityOfDocs = await commentsCollection.countDocuments({postId: postId})
 
             return {
-                pagesCount: Math.ceil(quantityOfDocs / pageSize),
-                page: pageNumber,
-                pageSize: pageSize,
+                pagesCount: Math.ceil(quantityOfDocs / +pageSize),
+                page: +pageNumber,
+                pageSize: +pageSize,
                 totalCount: quantityOfDocs,
-                items: sortedItems.slice((pageNumber - 1) * (pageSize), (pageNumber) * (pageSize))
+                items: sortedItems.slice((+pageNumber - 1) * (+pageSize), (+pageNumber) * (+pageSize))
             }
         } else {
             return 404

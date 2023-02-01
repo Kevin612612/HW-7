@@ -25,11 +25,11 @@ exports.postBusinessLayer = {
                 const sortedItems = yield comments_repository_db_1.commentsRepository.allComments(postId, sortBy, sortDirection);
                 const quantityOfDocs = yield mongodb_1.commentsCollection.countDocuments({ postId: postId });
                 return {
-                    pagesCount: Math.ceil(quantityOfDocs / pageSize),
-                    page: pageNumber,
-                    pageSize: pageSize,
+                    pagesCount: Math.ceil(quantityOfDocs / +pageSize),
+                    page: +pageNumber,
+                    pageSize: +pageSize,
                     totalCount: quantityOfDocs,
-                    items: sortedItems.slice((pageNumber - 1) * (pageSize), (pageNumber) * (pageSize))
+                    items: sortedItems.slice((+pageNumber - 1) * (+pageSize), (+pageNumber) * (+pageSize))
                 };
             }
             else {
