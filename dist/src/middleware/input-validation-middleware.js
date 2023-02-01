@@ -124,13 +124,13 @@ exports.usersEmailValidation2 = (0, express_validator_1.body)('email')
     .isString()
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
     .custom((value) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield users_repository_db_1.usersRepository.findUserByEmail(value);
+    const user = yield users_repository_db_1.usersRepository.findUserByLoginOrEmail(value);
     if (!user)
         throw new Error('User doesn\'t exist');
     return true;
 }))
     .custom((value) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield users_repository_db_1.usersRepository.findUserByEmail(value);
+    const user = yield users_repository_db_1.usersRepository.findUserByLoginOrEmail(value);
     if ((user === null || user === void 0 ? void 0 : user.emailConfirmation.isConfirmed) === true)
         throw new Error('Email already confirmed');
     return true;
