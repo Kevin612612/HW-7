@@ -34,6 +34,11 @@ export type PostsTypeSchema = { pagesCount: number, page: number, pageSize: numb
 export type userViewModel = { id: string, login: string, email: string, createdAt: Date }
 
 //data type
+
+type codeDataType = {
+    code: string,
+    sentAt: Date
+}
 export type userDataModel = {
     id: string,
     accountData: {
@@ -48,6 +53,7 @@ export type userDataModel = {
         expirationDate: Date,
         isConfirmed: boolean,
     },
+    codes: codeDataType[]
 }
 
 //userType returned by POST-method

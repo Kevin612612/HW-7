@@ -96,6 +96,8 @@ exports.userBusinessLayer = {
                 //create a salt and hash
                 const passwordSalt = yield bcrypt_1.default.genSalt(10);
                 const passwordHash = yield bcrypt_1.default.hash(password, passwordSalt);
+                const code = (0, uuid_1.v4)();
+                const createdAt = new Date();
                 const newUser = {
                     id: userId,
                     accountData: {
@@ -103,16 +105,17 @@ exports.userBusinessLayer = {
                         email: email,
                         passwordSalt,
                         passwordHash,
-                        createdAt: new Date()
+                        createdAt: createdAt
                     },
                     emailConfirmation: {
-                        confirmationCode: (0, uuid_1.v4)(),
-                        expirationDate: (0, add_1.default)(new Date(), {
+                        confirmationCode: code,
+                        expirationDate: (0, add_1.default)(createdAt, {
                             hours: 10,
                             minutes: 3,
                         }),
                         isConfirmed: false,
                     },
+                    codes: [{ code: code, sentAt: createdAt }]
                 };
                 // put this new user in db
                 const result = yield users_repository_db_1.usersRepository.newPostedUser(newUser);

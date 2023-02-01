@@ -95,6 +95,8 @@ export const userBusinessLayer = {
             //create a salt and hash
             const passwordSalt = await bcrypt.genSalt(10)
             const passwordHash = await bcrypt.hash(password, passwordSalt)
+            const code = uuidv4()
+            const createdAt = new Date()
             const newUser = {
                 id: userId,
                 accountData: {
@@ -102,16 +104,17 @@ export const userBusinessLayer = {
                     email: email,
                     passwordSalt,
                     passwordHash,
-                    createdAt: new Date()
+                    createdAt: createdAt
                 },
                 emailConfirmation: {
-                    confirmationCode: uuidv4(),
-                    expirationDate: add(new Date(), {
+                    confirmationCode: code,
+                    expirationDate: add(createdAt, {
                         hours: 10,
                         minutes: 3,
                     }),
                     isConfirmed: false,
                 },
+                codes: [{code: code, sentAt: createdAt}]
             }
             // put this new user in db
             const result = await usersRepository.newPostedUser(newUser)
