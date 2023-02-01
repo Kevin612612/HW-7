@@ -20,18 +20,16 @@ export const emailsManager = {
     async sendEmailConfirmationMessageAgain(email: string) {
         //find user
         const user = await usersRepository.findUserByLoginOrEmail(email)
-        if (user) {
+        if (user && user?.emailConfirmation.isConfirmed === false) {
             //create new code if old one is not confirmed yet
-            if (user?.emailConfirmation.isConfirmed === false) {
-                // user.emailConfirmation.confirmationCode = uuidv4()
-                //create new code
-                const newConfirmationCode = `<h1>Thank for your registration</h1>
+            user.emailConfirmation.confirmationCode = uuidv4()
+            const newConfirmationCode = `<h1>Thank for your registration</h1>
         <p>To finish registration please follow the link below one more time:
             <a href='https://hw-7-gold.vercel.app/auth/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>
         </p>`
-                //send email with new code
-                return await emailAdapter.sendEmail(email, newConfirmationCode, "confirm registration")
-            }
+            //send email with new code
+            return await emailAdapter.sendEmail(email, newConfirmationCode, "confirm registration")
+
         } else {
             return 400
         }
