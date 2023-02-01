@@ -152,6 +152,7 @@ export const usersEmailValidation1 = body('loginOrEmail')
     .trim()
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
 
+
 export const codeValidation = body('code')
     .custom(async value => {
         const user = await usersRepository.findUserByCode( value)
