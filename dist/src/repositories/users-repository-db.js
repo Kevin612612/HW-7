@@ -9,9 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.usersRepository = void 0;
 const mongodb_1 = require("./mongodb");
+const add_1 = __importDefault(require("date-fns/add"));
 exports.usersRepository = {
     //(1) method returns array of users
     allUsers(sortBy, sortDirection, filter) {
@@ -85,6 +89,32 @@ exports.usersRepository = {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield mongodb_1.usersCollection.updateOne({ "accountData.login": user.accountData.login }, {
                 $set: { "codes": [{ code: code, sentAt: new Date() }] }
+            });
+            return result.matchedCount === 1;
+        });
+    },
+    //(10) method add accessToken into db
+    addAccessToken(user, token, liveTime) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield mongodb_1.usersCollection.updateOne({ "accountData.login": user.accountData.login }, {
+                $push: { accessTokens: {
+                        value: token,
+                        createdAt: new Date(),
+                        expiredAt: (0, add_1.default)(new Date(), { seconds: liveTime })
+                    } }
+            });
+            return result.matchedCount === 1;
+        });
+    },
+    //(11) method add refreshToken into db
+    addRefreshToken(user, token, liveTime) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield mongodb_1.usersCollection.updateOne({ "accountData.login": user.accountData.login }, {
+                $push: { refreshTokens: {
+                        value: token,
+                        createdAt: new Date(),
+                        expiredAt: (0, add_1.default)(new Date(), { seconds: liveTime })
+                    } }
             });
             return result.matchedCount === 1;
         });

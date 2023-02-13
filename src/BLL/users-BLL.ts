@@ -6,7 +6,7 @@
 //(3) deleteUser
 //(4) confirm code
 
-import {userViewModel, UsersTypeSchema} from "../types";
+import {userViewModel, UsersTypeSchema, TokenType} from "../types";
 import {usersRepository} from "../repositories/users-repository-db";
 import bcrypt from "bcrypt"
 import {usersCollection} from "../repositories/mongodb";
@@ -114,7 +114,11 @@ export const userBusinessLayer = {
                     }),
                     isConfirmed: false,
                 },
-                codes: [{code: code, sentAt: createdAt}]
+                codes: [{code: code, sentAt: createdAt}],
+                tokens: {
+                    accessTokens: [],
+                    refreshTokens: []
+                }
             }
             // put this new user in db
             const result = await usersRepository.newPostedUser(newUser)

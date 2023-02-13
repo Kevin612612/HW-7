@@ -2,7 +2,7 @@
 
 
 
-import {body, param, header} from 'express-validator'
+import {body, param, header, cookie} from 'express-validator'
 import {NextFunction, Request, Response} from "express";
 import {blogsRepository} from "../repositories/blogs-repository-db";
 import {postsRepository} from "../repositories/posts-repository-db";
@@ -173,3 +173,5 @@ export const commentValidation = body('content')
 
 //token validation
 export const tokenValidation = header('authorization').isJWT()
+
+export const tokenValidation1 = cookie('refreshToken').isJWT()

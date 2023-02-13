@@ -115,7 +115,11 @@ exports.userBusinessLayer = {
                         }),
                         isConfirmed: false,
                     },
-                    codes: [{ code: code, sentAt: createdAt }]
+                    codes: [{ code: code, sentAt: createdAt }],
+                    tokens: {
+                        accessTokens: [],
+                        refreshTokens: []
+                    }
                 };
                 // put this new user in db
                 const result = yield users_repository_db_1.usersRepository.newPostedUser(newUser);

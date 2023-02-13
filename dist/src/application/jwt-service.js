@@ -14,32 +14,67 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.jwtService = void 0;
-//(1) create token
-//(2) method returns user by token
+//(1) create access token
+//(2) create refresh token
+//(3) method returns user by token
+//(4) method return user by refresh-token
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const users_repository_db_1 = require("../repositories/users-repository-db");
 exports.jwtService = {
-    //(1) create token
-    createJWT(user) {
+    //(1) create access token
+    createAccessJWT(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            // debugger
+            //create token
             const payload = {
                 userId: user.id,
                 login: user.accountData.login,
                 email: user.accountData.email
             };
-            const secretOrPrivateKey = process.env.JWT_secret;
-            return jsonwebtoken_1.default.sign(payload, secretOrPrivateKey, { expiresIn: '1h' });
+            const liveTime = 24 * 3600 * 1000; //24hours in ms
+            const accessToken = jsonwebtoken_1.default.sign(payload, process.env.JWT_secret, { expiresIn: liveTime + "s" });
+            //put it into db in user schema
+            const result = yield users_repository_db_1.usersRepository.addAccessToken(user, accessToken, liveTime);
+            return accessToken;
         });
     },
-    //(2) method return user by token
-    getUserByToken(token) {
+    //(2) create refresh token
+    createRefreshJWT(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const payload = {
+                userId: user.id,
+                login: user.accountData.login,
+                email: user.accountData.email,
+            };
+            const liveTime = 24 * 3600 * 1000; //24hours in ms
+            const refreshToken = jsonwebtoken_1.default.sign(payload, process.env.JWT_secret, { expiresIn: liveTime + "s" });
+            //put it into db in user schema
+            const result = yield users_repository_db_1.usersRepository.addRefreshToken(user, refreshToken, liveTime);
+            return refreshToken;
+        });
+    },
+    //(3) method return user by access-token
+    getUserByAccessToken(token) {
+        try {
+            const user = jsonwebtoken_1.default.verify(token, process.env.JWT_secret);
+            return {
+                userId: user.userId,
+                login: user.login,
+                email: user.email
+            };
+        }
+        catch (_a) {
+            return undefined;
+        }
+    },
+    //(4) method return user by refresh-token
+    getUserByRefreshToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = jsonwebtoken_1.default.verify(token, process.env.JWT_secret);
+                const user = yield jsonwebtoken_1.default.verify(token, process.env.JWT_secret);
                 return {
-                    userId: result.userId,
-                    login: result.login,
-                    email: result.email
+                    userId: user.id,
+                    login: user.accountData.login,
+                    email: user.accountData.email,
                 };
             }
             catch (_a) {

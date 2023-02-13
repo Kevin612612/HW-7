@@ -17,7 +17,6 @@ exports.authBusinessLayer = void 0;
 //(1) Does user exist and password correct
 const users_repository_db_1 = require("../repositories/users-repository-db");
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const jwt_service_1 = require("../application/jwt-service");
 exports.authBusinessLayer = {
     //(1) Does user exist and password correct
     IsUserExist(loginOrEmail, password) {
@@ -28,7 +27,7 @@ exports.authBusinessLayer = {
             if (user) {
                 const passwordHash = yield bcrypt_1.default.hash(password, user.accountData.passwordSalt);
                 if (passwordHash == user.accountData.passwordHash) {
-                    return yield jwt_service_1.jwtService.createJWT(user);
+                    return user;
                 }
             }
             return undefined;

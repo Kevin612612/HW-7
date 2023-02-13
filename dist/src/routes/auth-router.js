@@ -11,11 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authRouter = void 0;
-//login
-//registration
-//registration-confirmation
-//resend-registration-code
-//get info about current user
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const auth_BLL_1 = require("../BLL/auth-BLL");
@@ -24,6 +19,7 @@ const authorization_middleware_1 = require("../middleware/authorization-middlewa
 const users_BLL_1 = require("../BLL/users-BLL");
 const findNonExistId_1 = require("../application/findNonExistId");
 const bussiness_service_1 = require("../bussiness/bussiness-service");
+const jwt_service_1 = require("../application/jwt-service");
 exports.authRouter = (0, express_1.Router)({});
 //login
 exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validation_middleware_1.usersLoginValidation1, input_validation_middleware_1.usersEmailValidation1]), input_validation_middleware_1.usersPasswordValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -41,16 +37,29 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
     //INPUT
     const { loginOrEmail, password } = req.body;
     //BLL
-    const userToken = yield auth_BLL_1.authBusinessLayer.IsUserExist(loginOrEmail, password);
+    const user = yield auth_BLL_1.authBusinessLayer.IsUserExist(loginOrEmail, password);
     //RETURN
-    if (userToken) {
-        res.status(200).send({
-            "accessToken": userToken
-        });
+    if (user) {
+        const accessToken = yield jwt_service_1.jwtService.createAccessJWT(user);
+        const refreshToken = yield jwt_service_1.jwtService.createRefreshJWT(user);
+        res
+            .cookie('refreshToken', refreshToken, {
+            maxAge: 24 * 60 * 60,
+            httpOnly: true,
+            secure: false
+        })
+            .status(200)
+            .json({ accessToken: accessToken });
     }
     else {
         res.sendStatus(401);
     }
+}));
+//new pair of tokens
+exports.authRouter.post('/refresh-token', authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // Get the refreshToken from cookie
+    const user = yield jwt_service_1.jwtService.getUserByRefreshToken(req.cookies.refreshToken);
+    res.status(200).json(user);
 }));
 //registration
 exports.authRouter.post('/registration', input_validation_middleware_1.usersLoginValidation, input_validation_middleware_1.usersPasswordValidation, input_validation_middleware_1.usersEmailValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

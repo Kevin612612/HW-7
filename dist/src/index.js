@@ -24,18 +24,22 @@ const comments_router_1 = require("./routes/comments-router");
 const testing_router_1 = require("./routes/testing-router");
 const mongodb_1 = require("./repositories/mongodb");
 const email_router_1 = require("./routes/email-router");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 exports.app = (0, express_1.default)();
 const corsMiddleware = (0, cors_1.default)();
 exports.app.use(corsMiddleware);
 const jsonBodyMiddleware = body_parser_1.default.json();
 exports.app.use(jsonBodyMiddleware);
+exports.app.use((0, cookie_parser_1.default)());
 //PORT
 const port = 5001 || process.env.PORT;
 //HOME PAGE
 exports.app.get('/', (req, res) => {
-    res.send(`<div style="background-color: darkorchid">
-<h1 style="background-color: chartreuse">Home page<h1>
-</div>`);
+    res.send(`<form>
+  <label for="input">Enter your text:</label>
+  <input type="text" id="input" name="input">
+  <input type="submit" value="Submit">
+</form>`);
 });
 //ROUTES
 exports.app.use('/auth', auth_router_1.authRouter);

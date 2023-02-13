@@ -10,10 +10,14 @@
 //(7) method update status
 //(8) method update code
 //(9) method update date when the code was sent
+//(10) method add accessToken into db
+//(11) method add refreshToken into db
+
 
 
 import {userDataModel} from "../types";
 import {usersCollection} from "./mongodb";
+import add from "date-fns/add";
 
 
 export const usersRepository = {
@@ -80,10 +84,35 @@ export const usersRepository = {
         })
         return result.matchedCount === 1
     },
+
     //(9) method update date when the FIRST CODE was sent
     async updateDate(user: userDataModel, code: string): Promise<boolean> {
         const result = await usersCollection.updateOne({"accountData.login": user.accountData.login}, {
             $set: {"codes": [{code: code, sentAt: new Date()}]}
+        })
+        return result.matchedCount === 1
+    },
+
+    //(10) method add accessToken into db
+    async addAccessToken(user: userDataModel, token: string, liveTime: number): Promise<boolean> {
+        const result = await usersCollection.updateOne({"accountData.login": user.accountData.login}, {
+            $push: {accessTokens: {
+                    value: token,
+                    createdAt: new Date(),
+                    expiredAt: add(new Date(), {seconds: liveTime})
+                }}
+        })
+        return result.matchedCount === 1
+    },
+
+    //(11) method add refreshToken into db
+    async addRefreshToken(user: userDataModel, token: string, liveTime: number): Promise<boolean> {
+        const result = await usersCollection.updateOne({"accountData.login": user.accountData.login}, {
+            $push: {refreshTokens: {
+                    value: token,
+                    createdAt: new Date(),
+                    expiredAt: add(new Date(), {seconds: liveTime})
+                }}
         })
         return result.matchedCount === 1
     },

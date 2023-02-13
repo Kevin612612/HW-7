@@ -39,6 +39,13 @@ type codeDataType = {
     code: string,
     sentAt: Date
 }
+
+type TokenType = {
+    value: string,
+    createdAt: Date,
+    expiredAt: Date
+
+}
 export type userDataModel = {
     id: string,
     accountData: {
@@ -53,7 +60,11 @@ export type userDataModel = {
         expirationDate: Date,
         isConfirmed: boolean,
     },
-    codes: codeDataType[]
+    codes: codeDataType[],
+    tokens: {
+        accessTokens: TokenType[],
+        refreshTokens: TokenType[]
+    }
 }
 
 //userType returned by POST-method
