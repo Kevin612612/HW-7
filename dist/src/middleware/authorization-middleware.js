@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkRefreshToken = exports.authMiddleWare = exports.authorization = void 0;
 const jwt_service_1 = require("../application/jwt-service");
