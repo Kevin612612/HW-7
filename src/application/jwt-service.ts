@@ -43,7 +43,7 @@ export const jwtService = {
             login: user.accountData.login,
             email: user.accountData.email,
         }
-        const liveTime = 20*60
+        const liveTime = 20
         const refreshToken = jwt.sign(
             payload,
             process.env.JWT_secret!,
