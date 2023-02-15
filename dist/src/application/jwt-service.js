@@ -48,7 +48,7 @@ exports.jwtService = {
                 login: user.accountData.login,
                 email: user.accountData.email,
             };
-            const liveTime = 20 * 60;
+            const liveTime = 20;
             const refreshToken = jsonwebtoken_1.default.sign(payload, process.env.JWT_secret, { expiresIn: liveTime + "s" });
             //put it into db in user schema
             const result = yield users_repository_db_1.usersRepository.addRefreshToken(user, refreshToken, liveTime);

@@ -16,6 +16,7 @@ import {blackList} from "../repositories/mongodb";
 
 export const jwtService = {
 
+
     //(1) create access token
     async createAccessJWT(user: userDataModel) {
         //create token
