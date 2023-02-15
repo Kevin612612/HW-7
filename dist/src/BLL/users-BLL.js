@@ -25,29 +25,6 @@ exports.userBusinessLayer = {
     allUsers(pageNumber, pageSize, sortBy, sortDirection, searchLoginTerm, searchEmailTerm) {
         return __awaiter(this, void 0, void 0, function* () {
             //filter depends on if we have searchLoginTerm and/or searchEmailTerm
-            // let filter = {};
-            //
-            // switch (searchLoginTerm && searchEmailTerm) {
-            //     case (searchLoginTerm && searchEmailTerm):
-            //         filter = {
-            //             $or: [{"accountData.login": {$regex: searchLoginTerm, $options: "i"}}, {
-            //                 "accountData.email": {
-            //                     $regex: searchEmailTerm,
-            //                     $options: "i"
-            //                 }
-            //             }]
-            //         }
-            //         break;
-            //     case (searchLoginTerm && !searchEmailTerm):
-            //         filter = {"accountData.login": {$regex: searchLoginTerm, $options: "i"}}
-            //         break;
-            //     case (!searchLoginTerm && searchEmailTerm):
-            //         filter = {"accountData.email": {$regex: searchEmailTerm, $options: "i"}}
-            //         break;
-            //     case (!searchLoginTerm && !searchEmailTerm):
-            //         filter = {};
-            //         break;
-            // }
             // x = a ? (b ? 11 : 10) : (b ? 01 : 00)
             const filter = searchLoginTerm ? searchEmailTerm ? {
                 $or: [{
@@ -153,7 +130,9 @@ exports.userBusinessLayer = {
     //(4) confirm code
     confirmCodeFromEmail(code) {
         return __awaiter(this, void 0, void 0, function* () {
+            //find user by code
             const user = yield users_repository_db_1.usersRepository.findUserByCode(code);
+            //check if user exists and email confirmed and code is not expired
             if (user && user.emailConfirmation.expirationDate > new Date() && user.emailConfirmation.isConfirmed != true) {
                 const changeStatus = yield users_repository_db_1.usersRepository.updateStatus(user);
                 return 204;

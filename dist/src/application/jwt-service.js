@@ -81,5 +81,20 @@ exports.jwtService = {
                 return undefined;
             }
         });
+    },
+    //check if a token has expired
+    isTokenExpired(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const payload = jsonwebtoken_1.default.verify(token, process.env.JWT_secret);
+                const expirationTime = payload.exp;
+                const currentTime = Math.floor(Date.now() / 1000);
+                return expirationTime < currentTime;
+            }
+            catch (error) {
+                // Handle invalid token or other errors
+                return true;
+            }
+        });
     }
 };

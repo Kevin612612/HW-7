@@ -11,6 +11,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authRouter = void 0;
+//login
+//new pair of tokens
+//registration
+//registration-confirmation
+//resend-registration-code
+//logout
+//get info about current user
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const auth_BLL_1 = require("../BLL/auth-BLL");
@@ -40,11 +47,13 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
     const user = yield auth_BLL_1.authBusinessLayer.IsUserExist(loginOrEmail, password);
     //RETURN
     if (user) {
+        //create the pair of tokens and put them into db
         const accessToken = yield jwt_service_1.jwtService.createAccessJWT(user);
         const refreshToken = yield jwt_service_1.jwtService.createRefreshJWT(user);
+        //send response with tokens
         res
             .cookie('refreshToken', refreshToken, {
-            maxAge: 24 * 60 * 60,
+            maxAge: 24 * 3600,
             httpOnly: true,
             secure: false
         })
@@ -57,9 +66,16 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
 }));
 //new pair of tokens
 exports.authRouter.post('/refresh-token', authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // Get the refreshToken from cookie
-    const user = yield jwt_service_1.jwtService.getUserByRefreshToken(req.cookies.refreshToken);
-    res.status(200).json(user);
+    //take accessToken and refreshToken tokens from cookie
+    const refreshToken = req.cookies.refreshToken;
+    const accessToken = req.cookies.accessToken;
+    // Set refreshToken in cookie
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: true,
+    });
+    // Return JWT accessToken body
+    res.status(200).json({ accessToken });
 }));
 //registration
 exports.authRouter.post('/registration', input_validation_middleware_1.usersLoginValidation, input_validation_middleware_1.usersPasswordValidation, input_validation_middleware_1.usersEmailValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -126,6 +142,13 @@ exports.authRouter.post('/registration-email-resending', input_validation_middle
     const result = yield bussiness_service_1.emailsManager.sendEmailConfirmationMessageAgain(email);
     //RETURN
     res.status(204).send(result);
+}));
+//logout
+exports.authRouter.post('/logout', authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //Clear the refreshToken from the cookies
+    res.clearCookie('refreshToken');
+    //RETURN
+    res.status(204);
 }));
 //get info about current user
 exports.authRouter.get('/me', authorization_middleware_1.authMiddleWare, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

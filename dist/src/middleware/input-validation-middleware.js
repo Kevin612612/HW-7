@@ -140,13 +140,17 @@ exports.usersEmailValidation1 = (0, express_validator_1.body)('loginOrEmail')
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$');
 exports.codeValidation = (0, express_validator_1.body)('code')
     .custom((value) => __awaiter(void 0, void 0, void 0, function* () {
+    //find the user by code
     const user = yield users_repository_db_1.usersRepository.findUserByCode(value);
+    //check if he exists
     if (!user)
         throw new Error('user with this code doesn\'t exist');
     return true;
 }))
     .custom((value) => __awaiter(void 0, void 0, void 0, function* () {
+    //find user by code
     const user = yield users_repository_db_1.usersRepository.findUserByCode(value);
+    //check if his email already confirmed
     if ((user === null || user === void 0 ? void 0 : user.emailConfirmation.isConfirmed) == true)
         throw new Error('Code already confirmed');
     return true;

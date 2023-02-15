@@ -2,6 +2,12 @@
 
 
 
+//Basic Authorization
+//Bearer Authorization
+//Refresh token validation
+
+
+
 import {NextFunction, Request, Response} from "express";
 import {jwtService} from "../application/jwt-service";
 import {usersRepository} from "../repositories/users-repository-db";
@@ -38,26 +44,29 @@ export const authMiddleWare = async (req: Request, res: Response, next: NextFunc
 }
 
 
-// middleware to check if refresh token exists and is valid
+//check if refresh token exists and is valid
 export const checkRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
-    // Get the refresh token from cookie
+    //take the refresh token from cookie
     const refreshToken = req.cookies.refreshToken;
+    //check if it exists
     if (!refreshToken) {
-        return res.status(401).send({ error: 'Refresh token not found' });
+        return res.status(401).send({error: 'Refresh token is not found'});
     }
 
-    // try {
-    //     const decoded = jwt.verify(refreshToken, secretKey);
-    //     const user = jwtService.getUserByRefreshToken(refreshToken);
-    //     if (!user) {
-    //         return res.status(401).send({ error: 'Invalid token type' });
-    //     }
-    //     if (decoded.exp <= Date.now() / 1000) {
-    //         return res.status(401).send({ error: 'Token has expired' });
-    //     }
-    // } catch (err) {
-    //     return res.status(401).send({ error: 'Invalid token' });
-    // }
+    try {
+        const user = await jwtService.getUserByRefreshToken(refreshToken)
+        //does user from this token exist?
+        if (!user) {
+            return res.status(401).send({error: 'Incorrect token'});
+        }
+        //has the token expired?
+        const tokenExpired = await jwtService.isTokenExpired(refreshToken)
+        if (tokenExpired) {
+            return res.status(401).send({error: 'Token has expired'});
+        }
+    } catch (err) {
+        return res.status(401).send({error: 'Invalid token'});
+    }
 
     next();
 };

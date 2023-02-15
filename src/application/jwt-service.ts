@@ -79,5 +79,19 @@ export const jwtService = {
         } catch {
             return undefined
         }
+    },
+
+
+    //check if a token has expired
+    async isTokenExpired(token: string): Promise<boolean> {
+    try {
+        const payload = jwt.verify(token, process.env.JWT_secret!) as { exp: number };
+        const expirationTime = payload.exp;
+        const currentTime = Math.floor(Date.now() / 1000);
+        return expirationTime < currentTime;
+    } catch (error) {
+        // Handle invalid token or other errors
+        return true;
     }
+}
 }

@@ -6,10 +6,10 @@
 //registration
 //registration-confirmation
 //resend-registration-code
+//logout
 //get info about current user
 
 
-import cookieParser from 'cookie-parser';
 import {Request, Response, Router} from "express";
 import {oneOf, validationResult} from "express-validator";
 import {authBusinessLayer} from "../BLL/auth-BLL";
@@ -20,16 +20,13 @@ import {
     usersLoginValidation,
     usersEmailValidation,
     codeValidation,
-    usersEmailValidation2,
-    tokenValidation1
+    usersEmailValidation2
 } from "../middleware/input-validation-middleware";
 import {authMiddleWare, checkRefreshToken} from "../middleware/authorization-middleware";
 import {userBusinessLayer} from "../BLL/users-BLL";
 import {createUserId} from "../application/findNonExistId";
 import {emailsManager} from "../bussiness/bussiness-service";
 import {jwtService} from "../application/jwt-service";
-import {app} from "../index";
-import jwt from "jsonwebtoken";
 
 
 export const authRouter = Router({})
@@ -57,11 +54,13 @@ authRouter.post('/login',
         const user = await authBusinessLayer.IsUserExist(loginOrEmail, password)
         //RETURN
         if (user) {
+            //create the pair of tokens and put them into db
             const accessToken = await jwtService.createAccessJWT(user)
             const refreshToken = await jwtService.createRefreshJWT(user)
+            //send response with tokens
             res
                 .cookie('refreshToken', refreshToken, {
-                    maxAge: 24 * 60 * 60,
+                    maxAge: 24 * 3600,
                     httpOnly: true,
                     secure: false
                 })
@@ -77,9 +76,16 @@ authRouter.post('/login',
 authRouter.post('/refresh-token',
     checkRefreshToken,
     async (req: Request, res: Response) => {
-        // Get the refreshToken from cookie
-        const user = await jwtService.getUserByRefreshToken(req.cookies.refreshToken)
-        res.status(200).json(user)
+        //take accessToken and refreshToken tokens from cookie
+        const refreshToken = req.cookies.refreshToken
+        const accessToken = req.cookies.accessToken
+        // Set refreshToken in cookie
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true,
+        });
+        // Return JWT accessToken body
+        res.status(200).json({accessToken});
     })
 
 
@@ -158,6 +164,18 @@ authRouter.post('/registration-email-resending',
         //RETURN
         res.status(204).send(result)
     })
+
+
+//logout
+authRouter.post('/logout',
+    checkRefreshToken,
+    async (req: Request, res: Response) => {
+        //Clear the refreshToken from the cookies
+        res.clearCookie('refreshToken');
+        //RETURN
+        res.status(204)
+    })
+
 
 //get info about current user
 authRouter.get('/me',

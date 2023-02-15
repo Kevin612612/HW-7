@@ -20,30 +20,6 @@ export const userBusinessLayer = {
     async allUsers(pageNumber: any, pageSize: any, sortBy: any, sortDirection: any, searchLoginTerm: any, searchEmailTerm: any): Promise<UsersTypeSchema> {
         //filter depends on if we have searchLoginTerm and/or searchEmailTerm
 
-        // let filter = {};
-        //
-        // switch (searchLoginTerm && searchEmailTerm) {
-        //     case (searchLoginTerm && searchEmailTerm):
-        //         filter = {
-        //             $or: [{"accountData.login": {$regex: searchLoginTerm, $options: "i"}}, {
-        //                 "accountData.email": {
-        //                     $regex: searchEmailTerm,
-        //                     $options: "i"
-        //                 }
-        //             }]
-        //         }
-        //         break;
-        //     case (searchLoginTerm && !searchEmailTerm):
-        //         filter = {"accountData.login": {$regex: searchLoginTerm, $options: "i"}}
-        //         break;
-        //     case (!searchLoginTerm && searchEmailTerm):
-        //         filter = {"accountData.email": {$regex: searchEmailTerm, $options: "i"}}
-        //         break;
-        //     case (!searchLoginTerm && !searchEmailTerm):
-        //         filter = {};
-        //         break;
-        // }
-
         // x = a ? (b ? 11 : 10) : (b ? 01 : 00)
         const filter = searchLoginTerm ? searchEmailTerm ? {
             $or: [{
@@ -82,8 +58,6 @@ export const userBusinessLayer = {
             })
         }
     },
-
-
 
 
     //(2) method creates user
@@ -149,7 +123,9 @@ export const userBusinessLayer = {
 
     //(4) confirm code
     async confirmCodeFromEmail(code: string): Promise<boolean | number> {
+        //find user by code
         const user = await usersRepository.findUserByCode(code)
+        //check if user exists and email confirmed and code is not expired
         if (user && user.emailConfirmation.expirationDate > new Date() && user.emailConfirmation.isConfirmed != true) {
             const changeStatus = await usersRepository.updateStatus(user)
             return 204
