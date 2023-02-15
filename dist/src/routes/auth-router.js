@@ -53,9 +53,9 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
         //send response with tokens
         res
             .cookie('refreshToken', refreshToken, {
-            maxAge: 24 * 3600,
+            maxAge: 20,
             httpOnly: true,
-            secure: false
+            secure: true
         })
             .status(200)
             .json({ accessToken: accessToken });
