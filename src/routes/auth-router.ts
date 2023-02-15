@@ -9,7 +9,7 @@
 //logout
 //get info about current user
 
-
+import cookieParser from "cookie-parser";
 import {Request, Response, Router} from "express";
 import {oneOf, validationResult} from "express-validator";
 import {authBusinessLayer} from "../BLL/auth-BLL";
@@ -60,9 +60,10 @@ authRouter.post('/login',
             //send response with tokens
             res
                 .cookie('refreshToken', refreshToken, {
-                    maxAge: 20*1000,
+                    maxAge: 20000 * 1000,
+                    // maxAge: 20*1000,
                     httpOnly: true,
-                    secure: true
+                    // secure: true
                 })
                 .status(200)
                 .json({accessToken: accessToken})
@@ -70,7 +71,6 @@ authRouter.post('/login',
             res.sendStatus(401)
         }
     })
-
 
 
 //new pair of tokens
@@ -175,9 +175,7 @@ authRouter.post('/logout',
         const refreshToken = req.cookies.refreshToken;
         const result = await jwtService.makeRefreshTokenExpired(refreshToken)
         //clear the refreshToken from the cookies
-        res.clearCookie('refreshToken');
-        //RETURN
-        res.status(204)
+        res.clearCookie('refreshToken').status(204).send('yes')
     })
 
 
