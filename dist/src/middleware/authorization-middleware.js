@@ -59,7 +59,8 @@ const checkRefreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, 
         return res.status(401).send({ error: 'Refresh token is not found' });
     }
     try {
-        const user = yield jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);
+        const user = yield jwt_service_1.jwtService.getUserByRefreshToken(req.cookies.refreshToken);
+        debugger;
         //does user from this token exist?
         if (!user) {
             return res.status(401).send({ error: 'Incorrect token' });

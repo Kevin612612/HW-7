@@ -30,7 +30,7 @@ exports.jwtService = {
                 login: user.accountData.login,
                 email: user.accountData.email
             };
-            const liveTime = 10;
+            const liveTime = 60;
             const accessToken = jsonwebtoken_1.default.sign(payload, process.env.JWT_secret, { expiresIn: liveTime + "s" });
             //put it into db in user schema
             const result = yield users_repository_db_1.usersRepository.addAccessToken(user, accessToken, liveTime);
@@ -45,7 +45,7 @@ exports.jwtService = {
                 login: user.accountData.login,
                 email: user.accountData.email,
             };
-            const liveTime = 20;
+            const liveTime = 120;
             const refreshToken = jsonwebtoken_1.default.sign(payload, process.env.JWT_secret, { expiresIn: liveTime + "s" });
             //put it into db in user schema
             const result = yield users_repository_db_1.usersRepository.addRefreshToken(user, refreshToken, liveTime);
@@ -71,10 +71,11 @@ exports.jwtService = {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const user = yield jsonwebtoken_1.default.verify(token, process.env.JWT_secret);
+                debugger;
                 return {
-                    userId: user.id,
-                    login: user.accountData.login,
-                    email: user.accountData.email,
+                    userId: user.userId,
+                    login: user.login,
+                    email: user.email,
                 };
             }
             catch (_a) {

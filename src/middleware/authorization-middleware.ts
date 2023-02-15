@@ -60,7 +60,8 @@ export const checkRefreshToken = async (req: Request, res: Response, next: NextF
     }
 
     try {
-        const user = await jwtService.getUserByRefreshToken(refreshToken)
+        const user = await jwtService.getUserByRefreshToken(req.cookies.refreshToken)
+        debugger
         //does user from this token exist?
         if (!user) {
             return res.status(401).send({error: 'Incorrect token'});

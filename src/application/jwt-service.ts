@@ -21,7 +21,7 @@ export const jwtService = {
             login: user.accountData.login,
             email: user.accountData.email
         }
-        const liveTime = 10
+        const liveTime = 60
         const accessToken = jwt.sign(
             payload,
             process.env.JWT_secret!,
@@ -41,7 +41,7 @@ export const jwtService = {
             login: user.accountData.login,
             email: user.accountData.email,
         }
-        const liveTime = 20
+        const liveTime = 120
         const refreshToken = jwt.sign(
             payload,
             process.env.JWT_secret!,
@@ -72,10 +72,11 @@ export const jwtService = {
     async getUserByRefreshToken(token: string) {
         try {
             const user: any = await jwt.verify(token, process.env.JWT_secret!)
+            debugger
             return {
-                userId: user.id,
-                login: user.accountData.login,
-                email: user.accountData.email,
+                userId: user.userId,
+                login: user.login,
+                email: user.email,
             }
         } catch {
             return undefined
