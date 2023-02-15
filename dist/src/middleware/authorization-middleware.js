@@ -35,7 +35,13 @@ const authMiddleWare = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         res.sendStatus(401);
         return;
     }
+    //
     const token = req.headers.authorization.split(' ')[1]; //token is in headers: 'bearer algorithmSecretKey.payload.kindOfHash'
+    const tokenExpired = yield jwt_service_1.jwtService.isTokenExpired(token);
+    if (tokenExpired) {
+        return res.status(401).send({ error: 'Token has expired' });
+    }
+    //
     const userDecoded = yield jwt_service_1.jwtService.getUserByAccessToken(token); //get user from payload
     if (userDecoded) {
         req.user = yield users_repository_db_1.usersRepository.findUserByLoginOrEmail(userDecoded.login); //get user from db by user.login and take it into body
