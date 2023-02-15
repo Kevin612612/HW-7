@@ -84,7 +84,7 @@ exports.usersRepository = {
             return result.matchedCount === 1;
         });
     },
-    //(9) method update date when the FIRST CODE was sent
+    //(9) method update the date when the FIRST CODE was sent
     updateDate(user, code) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield mongodb_1.usersCollection.updateOne({ "accountData.login": user.accountData.login }, {
@@ -115,6 +115,15 @@ exports.usersRepository = {
                         createdAt: new Date(),
                         expiredAt: (0, add_1.default)(new Date(), { seconds: liveTime })
                     } }
+            });
+            return result.matchedCount === 1;
+        });
+    },
+    //(12) method set refreshToken expired
+    setRefreshTokenExpired(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield mongodb_1.usersCollection.updateOne({ "accountData.login": user.accountData.login }, {
+                $set: { "refreshTokens": [{ value: "", createdAt: "", expiredAt: "" }] }
             });
             return result.matchedCount === 1;
         });

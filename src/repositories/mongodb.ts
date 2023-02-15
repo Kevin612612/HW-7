@@ -33,3 +33,6 @@ export async function runDb() {
         await client.close();
     }
 }
+
+
+export let blackList : string[] = []

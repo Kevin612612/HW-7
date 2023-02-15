@@ -60,7 +60,7 @@ authRouter.post('/login',
             //send response with tokens
             res
                 .cookie('refreshToken', refreshToken, {
-                    maxAge: 20*1000,
+                    maxAge: 20*1000*60,
                     httpOnly: true,
                     secure: true
                 })
@@ -170,7 +170,10 @@ authRouter.post('/registration-email-resending',
 authRouter.post('/logout',
     checkRefreshToken,
     async (req: Request, res: Response) => {
-        //Clear the refreshToken from the cookies
+        //make refreshToken Expired/Invalid
+        const refreshToken = req.cookies.refreshToken;
+        const result = await jwtService.makeRefreshTokenExpired(refreshToken)
+        //clear the refreshToken from the cookies
         res.clearCookie('refreshToken');
         //RETURN
         res.status(204)

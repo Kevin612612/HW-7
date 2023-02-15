@@ -1,17 +1,19 @@
 //Data access Layer
 
 
-//(1) allUsers
-//(2) newPostedUser
-//(3) deleteUser
-//(4) findUserByLoginOrEmail
-//(5) findUserByEmail
-//(6) method returns user by code
-//(7) method update status
-//(8) method update code
-//(9) method update date when the code was sent
+//(1)  allUsers
+//(2)  newPostedUser
+//(3)  deleteUser
+//(4)  findUserByLoginOrEmail
+//(5)  findUserByEmail
+//(6)  method returns user by code
+//(7)  method update status
+//(8)  method update code
+//(9)  method update date when the code was sent
 //(10) method add accessToken into db
 //(11) method add refreshToken into db
+//(12) method set refreshToken expired
+
 
 
 
@@ -85,7 +87,7 @@ export const usersRepository = {
         return result.matchedCount === 1
     },
 
-    //(9) method update date when the FIRST CODE was sent
+    //(9) method update the date when the FIRST CODE was sent
     async updateDate(user: userDataModel, code: string): Promise<boolean> {
         const result = await usersCollection.updateOne({"accountData.login": user.accountData.login}, {
             $set: {"codes": [{code: code, sentAt: new Date()}]}
@@ -113,6 +115,14 @@ export const usersRepository = {
                     createdAt: new Date(),
                     expiredAt: add(new Date(), {seconds: liveTime})
                 }}
+        })
+        return result.matchedCount === 1
+    },
+
+    //(12) method set refreshToken expired
+    async setRefreshTokenExpired(user: userDataModel): Promise<boolean> {
+        const result = await usersCollection.updateOne({"accountData.login": user.accountData.login}, {
+            $set: {"refreshTokens": [{value: "", createdAt: "", expiredAt: ""}]}
         })
         return result.matchedCount === 1
     },

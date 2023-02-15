@@ -18,8 +18,11 @@ exports.jwtService = void 0;
 //(2) create refresh token
 //(3) method returns user by token
 //(4) method return user by refresh-token
+//(5) check if a token has expired
+//(6) make refreshToken Invalid
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const users_repository_db_1 = require("../repositories/users-repository-db");
+const mongodb_1 = require("../repositories/mongodb");
 exports.jwtService = {
     //(1) create access token
     createAccessJWT(user) {
@@ -45,7 +48,7 @@ exports.jwtService = {
                 login: user.accountData.login,
                 email: user.accountData.email,
             };
-            const liveTime = 20;
+            const liveTime = 20 * 60;
             const refreshToken = jsonwebtoken_1.default.sign(payload, process.env.JWT_secret, { expiresIn: liveTime + "s" });
             //put it into db in user schema
             const result = yield users_repository_db_1.usersRepository.addRefreshToken(user, refreshToken, liveTime);
@@ -71,7 +74,6 @@ exports.jwtService = {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const user = yield jsonwebtoken_1.default.verify(token, process.env.JWT_secret);
-                debugger;
                 return {
                     userId: user.userId,
                     login: user.login,
@@ -83,7 +85,7 @@ exports.jwtService = {
             }
         });
     },
-    //check if a token has expired
+    //(5)check if a token has expired
     isTokenExpired(token) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -97,5 +99,18 @@ exports.jwtService = {
                 return true;
             }
         });
-    }
+    },
+    //(6) make refreshToken Invalid
+    makeRefreshTokenExpired(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            mongodb_1.blackList.push(token);
+            //decode user
+            // const user: any = await jwt.verify(token, process.env.JWT_secret!)
+            // //find user by decoded login
+            // const userDb = await usersRepository.findUserByLoginOrEmail(user.login)
+            // //del token from this user
+            // const result =  await usersRepository.setRefreshTokenExpired(userDb!)
+            return true;
+        });
+    },
 };

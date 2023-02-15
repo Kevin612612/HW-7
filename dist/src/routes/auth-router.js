@@ -53,7 +53,7 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
         //send response with tokens
         res
             .cookie('refreshToken', refreshToken, {
-            maxAge: 20 * 1000,
+            maxAge: 20 * 1000 * 60,
             httpOnly: true,
             secure: true
         })
@@ -145,7 +145,10 @@ exports.authRouter.post('/registration-email-resending', input_validation_middle
 }));
 //logout
 exports.authRouter.post('/logout', authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    //Clear the refreshToken from the cookies
+    //make refreshToken Expired/Invalid
+    const refreshToken = req.cookies.refreshToken;
+    const result = yield jwt_service_1.jwtService.makeRefreshTokenExpired(refreshToken);
+    //clear the refreshToken from the cookies
     res.clearCookie('refreshToken');
     //RETURN
     res.status(204);

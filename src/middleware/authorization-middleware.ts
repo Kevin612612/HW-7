@@ -11,6 +11,7 @@
 import {NextFunction, Request, Response} from "express";
 import {jwtService} from "../application/jwt-service";
 import {usersRepository} from "../repositories/users-repository-db";
+import {blackList} from "../repositories/mongodb";
 
 
 //Basic Authorization
@@ -54,6 +55,9 @@ export const authMiddleWare = async (req: Request, res: Response, next: NextFunc
 export const checkRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
     //take the refresh token from cookie
     const refreshToken = req.cookies.refreshToken;
+    //check if it is not included in black list
+    if (blackList.includes(refreshToken)) {
+        return res.status(401).send({error: 'Refresh token is invalid'});    }
     //check if it exists
     if (!refreshToken) {
         return res.status(401).send({error: 'Refresh token is not found'});
@@ -61,7 +65,6 @@ export const checkRefreshToken = async (req: Request, res: Response, next: NextF
 
     try {
         const user = await jwtService.getUserByRefreshToken(req.cookies.refreshToken)
-        debugger
         //does user from this token exist?
         if (!user) {
             return res.status(401).send({error: 'Incorrect token'});

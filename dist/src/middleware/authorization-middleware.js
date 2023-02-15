@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkRefreshToken = exports.authMiddleWare = exports.authorization = void 0;
 const jwt_service_1 = require("../application/jwt-service");
 const users_repository_db_1 = require("../repositories/users-repository-db");
+const mongodb_1 = require("../repositories/mongodb");
 //Basic Authorization
 const authorization = (req, res, next) => {
     //check if entered password encoded in base 64 is correct
@@ -54,13 +55,16 @@ exports.authMiddleWare = authMiddleWare;
 const checkRefreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     //take the refresh token from cookie
     const refreshToken = req.cookies.refreshToken;
+    //check if it is not included in black list
+    if (mongodb_1.blackList.includes(refreshToken)) {
+        return res.status(401).send({ error: 'Refresh token is invalid' });
+    }
     //check if it exists
     if (!refreshToken) {
         return res.status(401).send({ error: 'Refresh token is not found' });
     }
     try {
         const user = yield jwt_service_1.jwtService.getUserByRefreshToken(req.cookies.refreshToken);
-        debugger;
         //does user from this token exist?
         if (!user) {
             return res.status(401).send({ error: 'Incorrect token' });
