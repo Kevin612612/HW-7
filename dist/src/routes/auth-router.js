@@ -153,8 +153,8 @@ exports.authRouter.post('/logout', authorization_middleware_1.checkRefreshToken,
 //get info about current user
 exports.authRouter.get('/me', authorization_middleware_1.authMiddleWare, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).json({
-        email: req.user.email,
-        login: req.user.login,
+        email: req.user.accountData.email,
+        login: req.user.accountData.login,
         userId: req.user.id
     });
 }));

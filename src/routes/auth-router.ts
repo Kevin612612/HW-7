@@ -182,8 +182,8 @@ authRouter.get('/me',
     authMiddleWare,
     async (req: Request, res: Response) => {
         res.status(200).json({
-            email: req.user!.email,
-            login: req.user!.login,
+            email: req.user!.accountData.email,
+            login: req.user!.accountData.login,
             userId: req.user!.id
         })
     })
