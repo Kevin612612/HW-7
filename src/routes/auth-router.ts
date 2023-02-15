@@ -60,10 +60,10 @@ authRouter.post('/login',
             //send response with tokens
             res
                 .cookie('refreshToken', refreshToken, {
-                    maxAge: 20000 * 1000,
-                    // maxAge: 20*1000,
+                    // maxAge: 20000 * 1000,
+                    maxAge: 20*1000,
                     httpOnly: true,
-                    // secure: true
+                    secure: true
                 })
                 .status(200)
                 .json({accessToken: accessToken})
