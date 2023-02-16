@@ -63,7 +63,7 @@ export const checkRefreshToken = async (req: Request, res: Response, next: NextF
             return res.status(401).send({error: 'Refresh token is not found'});
         }
         //does user from this token exist?
-        const user = await jwtService.getUserByRefreshToken(refreshToken)
+        const user = jwtService.getUserByRefreshToken(refreshToken)
         if (!user) {
             return res.status(401).send({error: 'Incorrect token'});
         }

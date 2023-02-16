@@ -92,7 +92,6 @@ authRouter.post('/refresh-token',
             const refreshToken = await jwtService.createRefreshJWT(user)
             //send response with tokens
             res
-                .clearCookie('accessToken')
                 .clearCookie('refreshToken')
                 .cookie('refreshToken', refreshToken, {
                     // maxAge: 20000 * 1000,
@@ -100,14 +99,8 @@ authRouter.post('/refresh-token',
                     httpOnly: true,
                     secure: true
                 })
-                .cookie('accessToken', accessToken, {
-                    // maxAge: 10000 * 1000,
-                    maxAge: 10 * 1000,
-                    httpOnly: true,
-                    secure: true
-                })
                 .status(200)
-                .send('Ok')
+                .send({accessToken: accessToken})
         } else {
             res.sendStatus(401)
         }
