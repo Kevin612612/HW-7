@@ -9,7 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkRefreshToken = exports.authMiddleWare = exports.authorization = void 0;
 const jwt_service_1 = require("../application/jwt-service");
@@ -54,22 +53,22 @@ const authMiddleWare = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
 exports.authMiddleWare = authMiddleWare;
 //check if refresh token exists and is valid
 const checkRefreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    //take the refresh token from cookie
-    const refreshToken = req.cookies.refreshToken;
-    //check if it is not included in black list
-    if (mongodb_1.blackList.includes(refreshToken)) {
-        return res.status(401).send({ error: 'Refresh token is invalid' });
-    }
-    //check if it exists
-    if (!refreshToken) {
-        return res.status(401).send({ error: 'Refresh token is not found' });
-    }
-    //does user from this token exist?
-    const user = yield jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);
-    if (!user) {
-        return res.status(401).send({ error: 'Incorrect token' });
-    }
     try {
+        //take the refresh token from cookie
+        const refreshToken = req.cookies.refreshToken;
+        //check if it is not included in black list
+        if (mongodb_1.blackList.includes(refreshToken)) {
+            return res.status(401).send({ error: 'Refresh token is invalid' });
+        }
+        //check if it exists
+        if (!refreshToken) {
+            return res.status(401).send({ error: 'Refresh token is not found' });
+        }
+        //does user from this token exist?
+        const user = yield jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);
+        if (!user) {
+            return res.status(401).send({ error: 'Incorrect token' });
+        }
         //has the token expired?
         const tokenExpired = yield jwt_service_1.jwtService.isTokenExpired(refreshToken);
         if (tokenExpired) {

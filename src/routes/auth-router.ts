@@ -3,7 +3,7 @@
 
 
 //login
-//new pair of tokens
+//refresh tokens
 //registration
 //registration-confirmation
 //resend-registration-code

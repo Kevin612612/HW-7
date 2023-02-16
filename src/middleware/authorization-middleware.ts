@@ -1,12 +1,9 @@
 //Middleware
 
 
-
 //Basic Authorization
 //Bearer Authorization
 //Refresh token validation
-
-
 
 
 import {NextFunction, Request, Response} from "express";
@@ -54,23 +51,22 @@ export const authMiddleWare = async (req: Request, res: Response, next: NextFunc
 
 //check if refresh token exists and is valid
 export const checkRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
-    //take the refresh token from cookie
-    const refreshToken = req.cookies.refreshToken
-    //check if it is not included in black list
-    if (blackList.includes(refreshToken)) {
-        return res.status(401).send({error: 'Refresh token is invalid'})
-    }
-    //check if it exists
-    if (!refreshToken) {
-        return res.status(401).send({error: 'Refresh token is not found'});
-    }
-    //does user from this token exist?
-    const user = await jwtService.getUserByRefreshToken(refreshToken)
-    if (!user) {
-        return res.status(401).send({error: 'Incorrect token'});
-    }
-
     try {
+        //take the refresh token from cookie
+        const refreshToken = req.cookies.refreshToken
+        //check if it is not included in black list
+        if (blackList.includes(refreshToken)) {
+            return res.status(401).send({error: 'Refresh token is invalid'})
+        }
+        //check if it exists
+        if (!refreshToken) {
+            return res.status(401).send({error: 'Refresh token is not found'});
+        }
+        //does user from this token exist?
+        const user = await jwtService.getUserByRefreshToken(refreshToken)
+        if (!user) {
+            return res.status(401).send({error: 'Incorrect token'});
+        }
         //has the token expired?
         const tokenExpired = await jwtService.isTokenExpired(refreshToken)
         if (tokenExpired) {
