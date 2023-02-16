@@ -1,7 +1,6 @@
 //Presentation Layer
 
 
-
 //login
 //refresh tokens
 //registration
@@ -28,6 +27,8 @@ import {userBusinessLayer} from "../BLL/users-BLL";
 import {createUserId} from "../application/findNonExistId";
 import {emailsManager} from "../bussiness/bussiness-service";
 import {jwtService} from "../application/jwt-service";
+import {usersCollection} from "../repositories/mongodb";
+import {usersRepository} from "../repositories/users-repository-db";
 
 
 export const authRouter = Router({})
@@ -62,7 +63,7 @@ authRouter.post('/login',
             res
                 .cookie('refreshToken', refreshToken, {
                     // maxAge: 20000 * 1000,
-                    maxAge: 20*1000,
+                    maxAge: 20 * 1000,
                     httpOnly: true,
                     secure: true
                 })
@@ -79,15 +80,22 @@ authRouter.post('/refresh-token',
     checkRefreshToken,
     async (req: Request, res: Response) => {
         //take accessToken and refreshToken tokens from cookie
-        const refreshToken = req.cookies.refreshToken
         const accessToken = req.cookies.accessToken
-        // Set refreshToken in cookie
-        res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: true,
-        });
-        // Return JWT accessToken body
-        res.status(200).json({accessToken});
+        const _user = await jwtService.getUserByAccessToken(accessToken)
+        const user = await usersRepository.findUserByEmail(_user?.email)
+        //create the pair of new tokens
+        const newAccessToken = await jwtService.createAccessJWT(user!)
+        const newRefreshToken = await jwtService.createRefreshJWT(user!)
+        // put tokens in cookie
+        res
+            .cookie('refreshToken', newRefreshToken, {
+                httpOnly: true,
+                secure: true,
+            })
+            .cookie('accessToken', newAccessToken, {
+                httpOnly: true,
+                secure: true,
+            })
     })
 
 

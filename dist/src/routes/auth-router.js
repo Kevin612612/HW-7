@@ -20,6 +20,7 @@ const users_BLL_1 = require("../BLL/users-BLL");
 const findNonExistId_1 = require("../application/findNonExistId");
 const bussiness_service_1 = require("../bussiness/bussiness-service");
 const jwt_service_1 = require("../application/jwt-service");
+const users_repository_db_1 = require("../repositories/users-repository-db");
 exports.authRouter = (0, express_1.Router)({});
 //login
 exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validation_middleware_1.usersLoginValidation1, input_validation_middleware_1.usersEmailValidation1]), input_validation_middleware_1.usersPasswordValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -61,15 +62,22 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
 //new pair of tokens
 exports.authRouter.post('/refresh-token', authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //take accessToken and refreshToken tokens from cookie
-    const refreshToken = req.cookies.refreshToken;
     const accessToken = req.cookies.accessToken;
-    // Set refreshToken in cookie
-    res.cookie('refreshToken', refreshToken, {
+    const _user = yield jwt_service_1.jwtService.getUserByAccessToken(accessToken);
+    const user = yield users_repository_db_1.usersRepository.findUserByEmail(_user === null || _user === void 0 ? void 0 : _user.email);
+    //create the pair of new tokens
+    const newAccessToken = yield jwt_service_1.jwtService.createAccessJWT(user);
+    const newRefreshToken = yield jwt_service_1.jwtService.createRefreshJWT(user);
+    // put tokens in cookie
+    res
+        .cookie('refreshToken', newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+    })
+        .cookie('accessToken', newAccessToken, {
         httpOnly: true,
         secure: true,
     });
-    // Return JWT accessToken body
-    res.status(200).json({ accessToken });
 }));
 //registration
 exports.authRouter.post('/registration', input_validation_middleware_1.usersLoginValidation, input_validation_middleware_1.usersPasswordValidation, input_validation_middleware_1.usersEmailValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
