@@ -27,6 +27,7 @@ import {createUserId} from "../application/findNonExistId";
 import {emailsManager} from "../bussiness/bussiness-service";
 import {jwtService} from "../application/jwt-service";
 import {usersRepository} from "../repositories/users-repository-db";
+import {blackList} from "../repositories/mongodb";
 
 
 export const authRouter = Router({})
@@ -77,8 +78,10 @@ authRouter.post('/login',
 authRouter.post('/refresh-token',
     checkRefreshToken,
     async (req: Request, res: Response) => {
-        //take accessToken and refreshToken tokens from cookie
+        //take refreshToken token from cookie
         const refreshToken = req.cookies.refreshToken
+        //since validation is passed, so we can add refreshToken in black list
+        blackList.push(refreshToken)
         const _user = jwtService.getUserByRefreshToken(refreshToken)
         const user = await usersRepository.findUserByEmail(_user?.email)
         //create the pair of new tokens

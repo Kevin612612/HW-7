@@ -28,6 +28,7 @@ const findNonExistId_1 = require("../application/findNonExistId");
 const bussiness_service_1 = require("../bussiness/bussiness-service");
 const jwt_service_1 = require("../application/jwt-service");
 const users_repository_db_1 = require("../repositories/users-repository-db");
+const mongodb_1 = require("../repositories/mongodb");
 exports.authRouter = (0, express_1.Router)({});
 //login
 exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validation_middleware_1.usersLoginValidation1, input_validation_middleware_1.usersEmailValidation1]), input_validation_middleware_1.usersPasswordValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -68,8 +69,10 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
 }));
 //new pair of tokens
 exports.authRouter.post('/refresh-token', authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    //take accessToken and refreshToken tokens from cookie
+    //take refreshToken token from cookie
     const refreshToken = req.cookies.refreshToken;
+    //since validation is passed, so we can add refreshToken in black list
+    mongodb_1.blackList.push(refreshToken);
     const _user = jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);
     const user = yield users_repository_db_1.usersRepository.findUserByEmail(_user === null || _user === void 0 ? void 0 : _user.email);
     //create the pair of new tokens
