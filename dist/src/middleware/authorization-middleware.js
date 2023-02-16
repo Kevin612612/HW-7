@@ -58,7 +58,7 @@ const checkRefreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, 
         const refreshToken = req.cookies.refreshToken;
         //check if it is not included in black list
         if (mongodb_1.blackList.includes(refreshToken)) {
-            return res.status(401).send({ error: 'Refresh token is invalid' });
+            return res.status(401).send({ error: 'Refresh token is already invalid' });
         }
         //check if it exists
         if (!refreshToken) {

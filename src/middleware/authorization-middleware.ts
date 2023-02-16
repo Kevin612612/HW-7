@@ -56,7 +56,7 @@ export const checkRefreshToken = async (req: Request, res: Response, next: NextF
         const refreshToken = req.cookies.refreshToken
         //check if it is not included in black list
         if (blackList.includes(refreshToken)) {
-            return res.status(401).send({error: 'Refresh token is invalid'})
+            return res.status(401).send({error: 'Refresh token is already invalid'})
         }
         //check if it exists
         if (!refreshToken) {

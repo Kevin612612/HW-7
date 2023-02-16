@@ -9,7 +9,6 @@
 //logout
 //get info about current user
 
-import cookieParser from "cookie-parser";
 import {Request, Response, Router} from "express";
 import {oneOf, validationResult} from "express-validator";
 import {authBusinessLayer} from "../BLL/auth-BLL";
@@ -27,9 +26,7 @@ import {userBusinessLayer} from "../BLL/users-BLL";
 import {createUserId} from "../application/findNonExistId";
 import {emailsManager} from "../bussiness/bussiness-service";
 import {jwtService} from "../application/jwt-service";
-import {usersCollection} from "../repositories/mongodb";
 import {usersRepository} from "../repositories/users-repository-db";
-import jwt from "jsonwebtoken";
 
 
 export const authRouter = Router({})
@@ -91,7 +88,6 @@ authRouter.post('/refresh-token',
             const refreshToken = await jwtService.createRefreshJWT(user)
             //send response with tokens
             res
-                .clearCookie('refreshToken')
                 .cookie('refreshToken', refreshToken, {
                     // maxAge: 20000 * 1000,
                     maxAge: 20 * 1000,

@@ -11,6 +11,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authRouter = void 0;
+//login
+//refresh tokens
+//registration
+//registration-confirmation
+//resend-registration-code
+//logout
+//get info about current user
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const auth_BLL_1 = require("../BLL/auth-BLL");
@@ -72,7 +79,6 @@ exports.authRouter.post('/refresh-token', authorization_middleware_1.checkRefres
         const refreshToken = yield jwt_service_1.jwtService.createRefreshJWT(user);
         //send response with tokens
         res
-            .clearCookie('refreshToken')
             .cookie('refreshToken', refreshToken, {
             // maxAge: 20000 * 1000,
             maxAge: 20 * 1000,
