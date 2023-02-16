@@ -53,7 +53,7 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
             secure: true
         })
             .status(200)
-            .json({ accessToken: accessToken });
+            .send({ accessToken: accessToken });
     }
     else {
         res.sendStatus(401);
@@ -61,23 +61,38 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
 }));
 //new pair of tokens
 exports.authRouter.post('/refresh-token', authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    debugger;
     //take accessToken and refreshToken tokens from cookie
-    const accessToken = req.cookies.accessToken;
-    const _user = yield jwt_service_1.jwtService.getUserByAccessToken(accessToken);
+    const refreshToken = req.cookies.refreshToken;
+    const _user = jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);
     const user = yield users_repository_db_1.usersRepository.findUserByEmail(_user === null || _user === void 0 ? void 0 : _user.email);
     //create the pair of new tokens
-    const newAccessToken = yield jwt_service_1.jwtService.createAccessJWT(user);
-    const newRefreshToken = yield jwt_service_1.jwtService.createRefreshJWT(user);
-    // put tokens in cookie
-    res
-        .cookie('refreshToken', newRefreshToken, {
-        httpOnly: true,
-        secure: true,
-    })
-        .cookie('accessToken', newAccessToken, {
-        httpOnly: true,
-        secure: true,
-    });
+    if (user) {
+        //create the pair of tokens and put them into db
+        const accessToken = yield jwt_service_1.jwtService.createAccessJWT(user);
+        const refreshToken = yield jwt_service_1.jwtService.createRefreshJWT(user);
+        //send response with tokens
+        res
+            .clearCookie('accessToken')
+            .clearCookie('refreshToken')
+            .cookie('refreshToken', refreshToken, {
+            // maxAge: 20000 * 1000,
+            maxAge: 20 * 1000,
+            httpOnly: true,
+            secure: true
+        })
+            .cookie('accessToken', accessToken, {
+            // maxAge: 10000 * 1000,
+            maxAge: 10 * 1000,
+            httpOnly: true,
+            secure: true
+        })
+            .status(200)
+            .send('Ok');
+    }
+    else {
+        res.sendStatus(401);
+    }
 }));
 //registration
 exports.authRouter.post('/registration', input_validation_middleware_1.usersLoginValidation, input_validation_middleware_1.usersPasswordValidation, input_validation_middleware_1.usersEmailValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -151,7 +166,7 @@ exports.authRouter.post('/logout', authorization_middleware_1.checkRefreshToken,
     const refreshToken = req.cookies.refreshToken;
     const result = yield jwt_service_1.jwtService.makeRefreshTokenExpired(refreshToken);
     //clear the refreshToken from the cookies
-    res.clearCookie('refreshToken').status(204).send('yes');
+    res.clearCookie('refreshToken').status(204).send('you\'re quit');
 }));
 //get info about current user
 exports.authRouter.get('/me', authorization_middleware_1.authMiddleWare, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

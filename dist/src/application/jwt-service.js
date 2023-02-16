@@ -59,28 +59,21 @@ exports.jwtService = {
     },
     //(3) method return user by access-token
     getUserByAccessToken(token) {
-        try {
-            const user = jsonwebtoken_1.default.verify(token, process.env.JWT_secret);
-            return {
-                userId: user.userId,
-                login: user.login,
-                email: user.email
-            };
-        }
-        catch (_a) {
-            return undefined;
-        }
+        const user = jsonwebtoken_1.default.verify(token, process.env.JWT_secret);
+        return {
+            userId: user.userId,
+            login: user.login,
+            email: user.email
+        };
     },
     //(4) method return user by refresh-token
     getUserByRefreshToken(token) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const user = yield jsonwebtoken_1.default.verify(token, process.env.JWT_secret);
-            return {
-                userId: user.userId,
-                login: user.login,
-                email: user.email,
-            };
-        });
+        const user = jsonwebtoken_1.default.verify(token, process.env.JWT_secret);
+        return {
+            userId: user.userId,
+            login: user.login,
+            email: user.email,
+        };
     },
     //(5)check if a token has expired
     isTokenExpired(token) {

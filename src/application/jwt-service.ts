@@ -58,32 +58,25 @@ export const jwtService = {
     },
 
 
-
     //(3) method return user by access-token
     getUserByAccessToken(token: string) {
-        try {
-            const user: any = jwt.verify(token, process.env.JWT_secret!)
-            return {
-                userId: user.userId,
-                login: user.login,
-                email: user.email
-            }
-        } catch {
-            return undefined
+        const user: any = jwt.verify(token, process.env.JWT_secret!)
+        return {
+            userId: user.userId,
+            login: user.login,
+            email: user.email
         }
     },
 
 
-
     //(4) method return user by refresh-token
-    async getUserByRefreshToken(token: string) {
-        const user: any = await jwt.verify(token, process.env.JWT_secret!)
+    getUserByRefreshToken(token: string) {
+        const user: any = jwt.verify(token, process.env.JWT_secret!)
         return {
             userId: user.userId,
             login: user.login,
             email: user.email,
         }
-
     },
 
 

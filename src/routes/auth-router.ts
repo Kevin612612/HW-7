@@ -29,6 +29,7 @@ import {emailsManager} from "../bussiness/bussiness-service";
 import {jwtService} from "../application/jwt-service";
 import {usersCollection} from "../repositories/mongodb";
 import {usersRepository} from "../repositories/users-repository-db";
+import jwt from "jsonwebtoken";
 
 
 export const authRouter = Router({})
@@ -68,7 +69,7 @@ authRouter.post('/login',
                     secure: true
                 })
                 .status(200)
-                .json({accessToken: accessToken})
+                .send({accessToken: accessToken})
         } else {
             res.sendStatus(401)
         }
@@ -79,23 +80,37 @@ authRouter.post('/login',
 authRouter.post('/refresh-token',
     checkRefreshToken,
     async (req: Request, res: Response) => {
+        debugger
         //take accessToken and refreshToken tokens from cookie
-        const accessToken = req.cookies.accessToken
-        const _user = await jwtService.getUserByAccessToken(accessToken)
+        const refreshToken = req.cookies.refreshToken
+        const _user = jwtService.getUserByRefreshToken(refreshToken)
         const user = await usersRepository.findUserByEmail(_user?.email)
         //create the pair of new tokens
-        const newAccessToken = await jwtService.createAccessJWT(user!)
-        const newRefreshToken = await jwtService.createRefreshJWT(user!)
-        // put tokens in cookie
-        res
-            .cookie('refreshToken', newRefreshToken, {
-                httpOnly: true,
-                secure: true,
-            })
-            .cookie('accessToken', newAccessToken, {
-                httpOnly: true,
-                secure: true,
-            })
+        if (user) {
+            //create the pair of tokens and put them into db
+            const accessToken = await jwtService.createAccessJWT(user)
+            const refreshToken = await jwtService.createRefreshJWT(user)
+            //send response with tokens
+            res
+                .clearCookie('accessToken')
+                .clearCookie('refreshToken')
+                .cookie('refreshToken', refreshToken, {
+                    // maxAge: 20000 * 1000,
+                    maxAge: 20 * 1000,
+                    httpOnly: true,
+                    secure: true
+                })
+                .cookie('accessToken', accessToken, {
+                    // maxAge: 10000 * 1000,
+                    maxAge: 10 * 1000,
+                    httpOnly: true,
+                    secure: true
+                })
+                .status(200)
+                .send('Ok')
+        } else {
+            res.sendStatus(401)
+        }
     })
 
 
@@ -184,7 +199,7 @@ authRouter.post('/logout',
         const refreshToken = req.cookies.refreshToken;
         const result = await jwtService.makeRefreshTokenExpired(refreshToken)
         //clear the refreshToken from the cookies
-        res.clearCookie('refreshToken').status(204).send('yes')
+        res.clearCookie('refreshToken').status(204).send('you\'re quit')
     })
 
 
