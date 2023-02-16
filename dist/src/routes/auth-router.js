@@ -50,7 +50,7 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
             // maxAge: 20000 * 1000,
             maxAge: 20 * 1000,
             httpOnly: true,
-            // secure: true
+            secure: true
         })
             .status(200)
             .json({ accessToken: accessToken });
@@ -77,7 +77,7 @@ exports.authRouter.post('/refresh-token', authorization_middleware_1.checkRefres
             // maxAge: 20000 * 1000,
             maxAge: 20 * 1000,
             httpOnly: true,
-            // secure: true
+            secure: true
         })
             .status(200)
             .json({ accessToken: accessToken });
