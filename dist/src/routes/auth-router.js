@@ -50,10 +50,10 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
             // maxAge: 20000 * 1000,
             maxAge: 20 * 1000,
             httpOnly: true,
-            secure: true
+            // secure: true
         })
             .status(200)
-            .send({ accessToken: accessToken });
+            .json({ accessToken: accessToken });
     }
     else {
         res.sendStatus(401);
@@ -61,7 +61,6 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
 }));
 //new pair of tokens
 exports.authRouter.post('/refresh-token', authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    debugger;
     //take accessToken and refreshToken tokens from cookie
     const refreshToken = req.cookies.refreshToken;
     const _user = jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);
@@ -78,10 +77,10 @@ exports.authRouter.post('/refresh-token', authorization_middleware_1.checkRefres
             // maxAge: 20000 * 1000,
             maxAge: 20 * 1000,
             httpOnly: true,
-            secure: true
+            // secure: true
         })
             .status(200)
-            .send({ accessToken: accessToken });
+            .json({ accessToken: accessToken });
     }
     else {
         res.sendStatus(401);

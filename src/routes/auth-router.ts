@@ -66,10 +66,10 @@ authRouter.post('/login',
                     // maxAge: 20000 * 1000,
                     maxAge: 20 * 1000,
                     httpOnly: true,
-                    secure: true
+                    // secure: true
                 })
                 .status(200)
-                .send({accessToken: accessToken})
+                .json({accessToken: accessToken})
         } else {
             res.sendStatus(401)
         }
@@ -80,7 +80,6 @@ authRouter.post('/login',
 authRouter.post('/refresh-token',
     checkRefreshToken,
     async (req: Request, res: Response) => {
-        debugger
         //take accessToken and refreshToken tokens from cookie
         const refreshToken = req.cookies.refreshToken
         const _user = jwtService.getUserByRefreshToken(refreshToken)
@@ -97,10 +96,10 @@ authRouter.post('/refresh-token',
                     // maxAge: 20000 * 1000,
                     maxAge: 20 * 1000,
                     httpOnly: true,
-                    secure: true
+                    // secure: true
                 })
                 .status(200)
-                .send({accessToken: accessToken})
+                .json({accessToken: accessToken})
         } else {
             res.sendStatus(401)
         }
