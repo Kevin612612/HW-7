@@ -10,9 +10,15 @@
 
 
 import jwt from 'jsonwebtoken'
-import {userDataModel} from "../types";
+import dotenv from 'dotenv'
+dotenv.config()
+
+import {userDataModel} from "../types/users";
 import {usersRepository} from "../repositories/users-repository-db";
 import {blackList} from "../repositories/mongodb";
+import {refreshTokensRepository} from "../repositories/refreshTokens-repository-db";
+import add from "date-fns/add";
+import {refreshTokensDataModel} from "../types/refreshTokens";
 
 export const jwtService = {
 
@@ -39,11 +45,15 @@ export const jwtService = {
 
 
     //(2) create refresh token
-    async createRefreshJWT(user: userDataModel) {
+    async createRefreshJWT(user: userDataModel,
+                           deviceId: string,
+                           deviceName: string,
+                           IP: string,) {
         const payload = {
             userId: user.id,
             login: user.accountData.login,
             email: user.accountData.email,
+            deviceId: deviceId
         }
         // const liveTime = 20000
         const liveTime = 20
@@ -53,7 +63,18 @@ export const jwtService = {
             {expiresIn: liveTime + "s"}
         )
         //put it into db in user schema
-        const result = await usersRepository.addRefreshToken(user, refreshToken, liveTime)
+        const result1 = await usersRepository.addRefreshToken(user, refreshToken, liveTime)
+        //put into refreshTokensCollection
+        const refreshTokenObject: refreshTokensDataModel = {
+            value: refreshToken,
+            userId: user.id,
+            deviceId: deviceId,
+            deviceName: deviceName,
+            IP: IP,
+            createdAt: new Date(),
+            expiredAt: add(new Date(), {seconds: liveTime})
+        }
+        const result2 = await refreshTokensRepository.newCreatedToken(refreshTokenObject)
         return refreshToken
     },
 

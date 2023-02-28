@@ -1,4 +1,10 @@
-import {blogsCollection, commentsCollection, postsCollection, usersCollection} from "../repositories/mongodb";
+import {
+    blogsCollection,
+    commentsCollection,
+    postsCollection,
+    refreshTokensCollection,
+    usersCollection
+} from "../repositories/mongodb";
 
 export const createId  = async (collection: any): Promise<string> => {
     let id = 1
@@ -19,6 +25,16 @@ export const createUserId  = async (): Promise<string> => {
         userId++
     }
     return userId.toString();
+}
+
+export const createDeviceId  = async (): Promise<string> => {
+    let deviceId = 1
+    while (deviceId) {
+        let token = await refreshTokensCollection.findOne({deviceId: deviceId.toString()})
+        if (!token) {break}
+        deviceId++
+    }
+    return deviceId.toString();
 }
 //
 // export const createBlogId  = async (): Promise<string> => {

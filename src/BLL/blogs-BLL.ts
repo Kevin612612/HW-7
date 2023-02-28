@@ -13,12 +13,12 @@
 import {
     blogViewModel,
     blogsTypeSchema,
-    PostsTypeSchema,
-} from "../types";
+} from "../types/blogs";
 import {blogsRepository} from "../repositories/blogs-repository-db";
 import {postsRepository} from "../repositories/posts-repository-db";
 import {blogsCollection, postsCollection} from "../repositories/mongodb";
 import {createId} from "../application/findNonExistId";
+import {PostsTypeSchema} from "../types/posts";
 
 export const blogBusinessLayer = {
 

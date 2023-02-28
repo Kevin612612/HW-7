@@ -1,52 +1,8 @@
-import express, {Request, Response} from "express"
-import bodyParser from "body-parser"
-import cors from "cors"
-import {authRouter} from "./routes/auth-router";
-import {usersRouter} from "./routes/users-router";
-import {blogsRouter} from "./routes/blogs-router";
-import {postsRouter} from "./routes/posts-router";
-import {commentsRouter} from "./routes/comments-router";
-import {testingRouter} from "./routes/testing-router";
 import {runDb} from "./repositories/mongodb";
-import {emailRouter} from "./routes/email-router";
-import cookieParser from "cookie-parser";
-
-
-export const app = express()
-
-const corsMiddleware = cors()
-app.use(corsMiddleware)
-
-const jsonBodyMiddleware = bodyParser.json()
-app.use(jsonBodyMiddleware)
-
-app.use(cookieParser())
-
+import {app} from "./setting";
 
 //PORT
 const port = 5001 || process.env.PORT
-
-
-//HOME PAGE
-app.get('/', (req: Request, res: Response) => {
-    res.send(`<form>
-  <label for="input">Enter your text:</label>
-  <input type="text" id="input" name="input">
-  <input type="submit" value="Submit">
-</form>`)
-})
-
-//ROUTES
-app.use('/auth', authRouter)
-
-app.use('/users', usersRouter)
-app.use('/blogs', blogsRouter)
-app.use('/posts', postsRouter)
-app.use('/comments', commentsRouter)
-app.use('/email', emailRouter)
-
-app.use('/testing', testingRouter)
-
 
 //START-APP FUNCTION
 const startApp = async () => {
@@ -60,3 +16,5 @@ const startApp = async () => {
 
 //START APP
 startApp();
+
+

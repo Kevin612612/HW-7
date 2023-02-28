@@ -9,7 +9,7 @@
 //(5) updatePostById
 //(6) deletePost
 
-import {postViewModel} from "../types";
+import {postViewModel} from "../types/posts";
 import {postsCollection} from "./mongodb";
 
 

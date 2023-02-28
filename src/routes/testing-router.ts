@@ -4,7 +4,9 @@
 
 
 import {Request, Response, Router} from "express";
-import {blogViewModel, commentViewModel, postViewModel, userViewModel} from "../types";
+import {blogViewModel} from "../types/blogs";
+import {postViewModel} from "../types/posts";
+
 import {db} from "../repositories/mongodb";
 
 export const testingRouter = Router({})

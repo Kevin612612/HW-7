@@ -1,4 +1,5 @@
 import {blogViewModel, postViewModel, userDataModel} from "../repositories/mongodb";
+import {DeviceDetector} from ''
 
 
 //expanding type Request
@@ -8,83 +9,15 @@ declare global {
             user: userDataModel | undefined,
             blog: blogViewModel | undefined,
             post: postViewModel | undefined,
+            useragent: string | string[] | undefined,
+            device: any,
+            bot: any,
+            resultClient: any,
+            resultOs: any,
+            result: any,
         }
     }
 }
-
-
-//BLOGS
-//view type
-export type blogViewModel = { id: string, name: string, description: string, websiteUrl: string, createdAt: Date }
-
-//blogType returned by POST-method
-export type blogsTypeSchema = { pagesCount: number, page: number, pageSize: number, totalCount: number, items: blogViewModel[] }
-
-
-//POSTS
-//view type
-export type postViewModel = { id: string, title: string, shortDescription: string, content: string, blogId: string, blogName: string, createdAt: Date }
-
-//postType returned by POST-method
-export type PostsTypeSchema = { pagesCount: number, page: number, pageSize: number, totalCount: number, items: postViewModel[] }
-
-
-//USERS
-//view type
-export type userViewModel = { id: string, login: string, email: string, createdAt: Date }
-
-//data type
-
-type codeDataType = {
-    code: string,
-    sentAt: Date
-}
-
-type TokenType = {
-    value: string,
-    createdAt: Date,
-    expiredAt: Date
-
-}
-export type userDataModel = {
-    id: string,
-    accountData: {
-        login: string,
-        email: string,
-        passwordSalt,
-        passwordHash,
-        createdAt: Date
-    },
-    emailConfirmation: {
-        confirmationCode: string,
-        expirationDate: Date,
-        isConfirmed: boolean,
-    },
-    codes: codeDataType[],
-    tokens: {
-        accessTokens: TokenType[],
-        refreshTokens: TokenType[]
-    }
-}
-
-//userType returned by POST-method
-export type UsersTypeSchema = { pagesCount: number, page: number, pageSize: number, totalCount: number, items: userViewModel[] }
-
-
-//COMMENTS
-//view type
-export type commentViewModel = {
-    commentatorInfo: {
-        userId: string,
-        userLogin: string,
-    }, id: string, content: string, createdAt: Date
-}
-
-//data type
-export type commentDataModel = { id: string, content: string, userId: string, userLogin: string, createdAt: Date, postId: string }
-
-//userType returned by POST-method
-export type CommentsTypeSchema = { pagesCount: number, page: number, pageSize: number, totalCount: number, items: commentViewModel[] }
 
 
 //APIErrorResult

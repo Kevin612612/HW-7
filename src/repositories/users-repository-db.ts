@@ -17,7 +17,7 @@
 
 
 
-import {userDataModel} from "../types";
+import {userDataModel} from "../types/users";
 import {usersCollection} from "./mongodb";
 import add from "date-fns/add";
 
@@ -97,26 +97,26 @@ export const usersRepository = {
 
     //(10) method add accessToken into db
     async addAccessToken(user: userDataModel, token: string, liveTime: number): Promise<boolean> {
-        const result = await usersCollection.updateOne({"accountData.login": user.accountData.login}, {
-            $push: {accessTokens: {
+        const result = await usersCollection.findOneAndUpdate({"accountData.login": user.accountData.login}, {
+            $push: {'tokens.accessTokens': {
                     value: token,
                     createdAt: new Date(),
                     expiredAt: add(new Date(), {seconds: liveTime})
                 }}
         })
-        return result.matchedCount === 1
+        return result.ok === 1
     },
 
     //(11) method add refreshToken into db
     async addRefreshToken(user: userDataModel, token: string, liveTime: number): Promise<boolean> {
-        const result = await usersCollection.updateOne({"accountData.login": user.accountData.login}, {
-            $push: {refreshTokens: {
+        const result = await usersCollection.findOneAndUpdate({"accountData.login": user.accountData.login}, {
+            $push: {'tokens.refreshTokens': {
                     value: token,
                     createdAt: new Date(),
                     expiredAt: add(new Date(), {seconds: liveTime})
                 }}
         })
-        return result.matchedCount === 1
+        return result.ok === 1
     },
 
     //(12) method set refreshToken expired

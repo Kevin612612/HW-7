@@ -96,27 +96,27 @@ exports.usersRepository = {
     //(10) method add accessToken into db
     addAccessToken(user, token, liveTime) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield mongodb_1.usersCollection.updateOne({ "accountData.login": user.accountData.login }, {
-                $push: { accessTokens: {
+            const result = yield mongodb_1.usersCollection.findOneAndUpdate({ "accountData.login": user.accountData.login }, {
+                $push: { 'tokens.accessTokens': {
                         value: token,
                         createdAt: new Date(),
                         expiredAt: (0, add_1.default)(new Date(), { seconds: liveTime })
                     } }
             });
-            return result.matchedCount === 1;
+            return result.ok === 1;
         });
     },
     //(11) method add refreshToken into db
     addRefreshToken(user, token, liveTime) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield mongodb_1.usersCollection.updateOne({ "accountData.login": user.accountData.login }, {
-                $push: { refreshTokens: {
+            const result = yield mongodb_1.usersCollection.findOneAndUpdate({ "accountData.login": user.accountData.login }, {
+                $push: { 'tokens.refreshTokens': {
                         value: token,
                         createdAt: new Date(),
                         expiredAt: (0, add_1.default)(new Date(), { seconds: liveTime })
                     } }
             });
-            return result.matchedCount === 1;
+            return result.ok === 1;
         });
     },
     //(12) method set refreshToken expired

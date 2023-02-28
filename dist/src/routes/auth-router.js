@@ -9,6 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authRouter = void 0;
 //login
@@ -20,11 +23,12 @@ exports.authRouter = void 0;
 //get info about current user
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
+const request_ip_1 = __importDefault(require("request-ip"));
 const auth_BLL_1 = require("../BLL/auth-BLL");
 const input_validation_middleware_1 = require("../middleware/input-validation-middleware");
 const authorization_middleware_1 = require("../middleware/authorization-middleware");
-const users_BLL_1 = require("../BLL/users-BLL");
 const findNonExistId_1 = require("../application/findNonExistId");
+const users_BLL_1 = require("../BLL/users-BLL");
 const bussiness_service_1 = require("../bussiness/bussiness-service");
 const jwt_service_1 = require("../application/jwt-service");
 const users_repository_db_1 = require("../repositories/users-repository-db");
@@ -45,20 +49,23 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
     }
     //INPUT
     const { loginOrEmail, password } = req.body;
+    const ipAddress = request_ip_1.default.getClientIp(req);
+    const deviceName = req.device.name ? req.device.name : '';
+    const deviceId = yield (0, findNonExistId_1.createDeviceId)();
     //BLL
     const user = yield auth_BLL_1.authBusinessLayer.IsUserExist(loginOrEmail, password);
     //RETURN
     if (user) {
         //create the pair of tokens and put them into db
         const accessToken = yield jwt_service_1.jwtService.createAccessJWT(user);
-        const refreshToken = yield jwt_service_1.jwtService.createRefreshJWT(user);
+        const refreshToken = yield jwt_service_1.jwtService.createRefreshJWT(user, deviceId, deviceName, ipAddress);
         //send response with tokens
         res
             .cookie('refreshToken', refreshToken, {
             // maxAge: 20000 * 1000,
             maxAge: 20 * 1000,
             httpOnly: true,
-            secure: true
+            secure: false
         })
             .status(200)
             .json({ accessToken: accessToken });
@@ -69,17 +76,21 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
 }));
 //new pair of tokens
 exports.authRouter.post('/refresh-token', authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    //take refreshToken token from cookie
+    //INPUT
     const refreshToken = req.cookies.refreshToken;
-    //since validation is passed, so we can add refreshToken in black list
+    const ipAddress1 = req.socket.remoteAddress;
+    const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const deviceId = req.get('deviceId') ? req.get('deviceId') : '';
+    const deviceName = req.get('deviceName') ? req.get('deviceName') : '';
+    //BLL - since validation is passed, so we can add refreshToken in black list
     mongodb_1.blackList.push(refreshToken);
     const _user = jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);
     const user = yield users_repository_db_1.usersRepository.findUserByEmail(_user === null || _user === void 0 ? void 0 : _user.email);
-    //create the pair of new tokens
+    //RETURN
     if (user) {
         //create the pair of tokens and put them into db
         const accessToken = yield jwt_service_1.jwtService.createAccessJWT(user);
-        const refreshToken = yield jwt_service_1.jwtService.createRefreshJWT(user);
+        const refreshToken = yield jwt_service_1.jwtService.createRefreshJWT(user, deviceId, deviceName, ipAddress1);
         //send response with tokens
         res
             .cookie('refreshToken', refreshToken, {

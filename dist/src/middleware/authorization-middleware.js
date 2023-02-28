@@ -62,7 +62,7 @@ const checkRefreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, 
         }
         //check if it exists
         if (!refreshToken) {
-            return res.status(401).send({ error: 'Refresh token is not found' });
+            return res.status(401).send({ error: 'Refresh token is not found)' });
         }
         //does user from this token exist?
         const user = jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);

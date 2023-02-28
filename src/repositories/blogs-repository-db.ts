@@ -8,7 +8,7 @@
 //(4) updateBlogById
 //(5) deleteBlog
 
-import {blogViewModel} from "../types";
+import {blogViewModel} from "../types/blogs";
 import {blogsCollection} from "./mongodb";
 
 

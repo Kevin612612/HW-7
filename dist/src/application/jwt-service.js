@@ -21,8 +21,12 @@ exports.jwtService = void 0;
 //(5) check if a token has expired
 //(6) make refreshToken Invalid
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const users_repository_db_1 = require("../repositories/users-repository-db");
 const mongodb_1 = require("../repositories/mongodb");
+const refreshTokens_repository_db_1 = require("../repositories/refreshTokens-repository-db");
+const add_1 = __importDefault(require("date-fns/add"));
 exports.jwtService = {
     //(1) create access token
     createAccessJWT(user) {
@@ -42,18 +46,30 @@ exports.jwtService = {
         });
     },
     //(2) create refresh token
-    createRefreshJWT(user) {
+    createRefreshJWT(user, deviceId, deviceName, IP) {
         return __awaiter(this, void 0, void 0, function* () {
             const payload = {
                 userId: user.id,
                 login: user.accountData.login,
                 email: user.accountData.email,
+                deviceId: deviceId
             };
             // const liveTime = 20000
             const liveTime = 20;
             const refreshToken = jsonwebtoken_1.default.sign(payload, process.env.JWT_secret, { expiresIn: liveTime + "s" });
             //put it into db in user schema
-            const result = yield users_repository_db_1.usersRepository.addRefreshToken(user, refreshToken, liveTime);
+            const result1 = yield users_repository_db_1.usersRepository.addRefreshToken(user, refreshToken, liveTime);
+            //put into refreshTokensCollection
+            const refreshTokenObject = {
+                value: refreshToken,
+                userId: user.id,
+                deviceId: deviceId,
+                deviceName: deviceName,
+                IP: IP,
+                createdAt: new Date(),
+                expiredAt: (0, add_1.default)(new Date(), { seconds: liveTime })
+            };
+            const result2 = yield refreshTokens_repository_db_1.refreshTokensRepository.newCreatedToken(refreshTokenObject);
             return refreshToken;
         });
     },

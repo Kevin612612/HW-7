@@ -11,10 +11,12 @@
 
 import {
     postViewModel,
-    PostsTypeSchema,
+    PostsTypeSchema
+} from "../types/posts";
+import {
     CommentsTypeSchema,
     commentViewModel
-} from "../types";
+} from "../types/comments";
 import {blogsRepository} from "../repositories/blogs-repository-db";
 import {postsRepository} from "../repositories/posts-repository-db";
 import {commentsRepository} from "../repositories/comments-repository-db";
@@ -51,7 +53,7 @@ export const postBusinessLayer = {
 
     //(2) creates new comment by postId
     async newPostedCommentByPostId(postId: string, content: string, userId: string, userLogin: string): Promise<commentViewModel | number> {
-        const idName: string =  await createId(commentsCollection)
+        const idName: string = await createId(commentsCollection)
 
         const foundPost = await postsRepository.findPostById(postId)
         if (foundPost) {
@@ -108,7 +110,7 @@ export const postBusinessLayer = {
                         shortDescription: string,
                         content: any): Promise<postViewModel | number> {
 
-        const idName: string =  await createId(postsCollection)
+        const idName: string = await createId(postsCollection)
 
         const blog = await blogsRepository.findBlogById(blogId)
         if (blog) {

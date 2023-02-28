@@ -6,7 +6,7 @@
 //(3) findCommentById
 
 import {commentsRepository} from "../repositories/comments-repository-db";
-import {commentViewModel} from "../types";
+import {commentViewModel} from "../types/comments";
 
 export const commentsBusinessLayer = {
 

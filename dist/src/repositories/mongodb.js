@@ -1,5 +1,5 @@
 "use strict";
-//this repository have to be async
+//this repository has to be async
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -33,7 +33,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blackList = exports.runDb = exports.commentsCollection = exports.usersCollection = exports.postsCollection = exports.blogsCollection = exports.db = exports.client = void 0;
+exports.blackList = exports.runDb = exports.refreshTokensCollection = exports.commentsCollection = exports.usersCollection = exports.postsCollection = exports.blogsCollection = exports.db = exports.client = void 0;
 const mongodb_1 = require("mongodb");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
@@ -45,6 +45,7 @@ exports.blogsCollection = exports.db.collection("blogs");
 exports.postsCollection = exports.db.collection("posts");
 exports.usersCollection = exports.db.collection("users");
 exports.commentsCollection = exports.db.collection("comments");
+exports.refreshTokensCollection = exports.db.collection("refreshTokens");
 function runDb() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -62,4 +63,5 @@ function runDb() {
     });
 }
 exports.runDb = runDb;
+//black list of refreshTokens
 exports.blackList = [];

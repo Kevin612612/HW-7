@@ -6,7 +6,7 @@
 //(3) deleteUser
 //(4) confirm code
 
-import {userViewModel, UsersTypeSchema, TokenType} from "../types";
+import {userViewModel, UsersTypeSchema} from "../types/users";
 import {usersRepository} from "../repositories/users-repository-db";
 import bcrypt from "bcrypt"
 import {usersCollection} from "../repositories/mongodb";

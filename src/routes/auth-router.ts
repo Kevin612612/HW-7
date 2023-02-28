@@ -11,6 +11,8 @@
 
 import {Request, Response, Router} from "express";
 import {oneOf, validationResult} from "express-validator";
+import requestIp from "request-ip";
+
 import {authBusinessLayer} from "../BLL/auth-BLL";
 import {
     usersLoginValidation1,
@@ -22,8 +24,8 @@ import {
     usersEmailValidation2
 } from "../middleware/input-validation-middleware";
 import {authMiddleWare, checkRefreshToken} from "../middleware/authorization-middleware";
+import {createDeviceId, createUserId} from "../application/findNonExistId";
 import {userBusinessLayer} from "../BLL/users-BLL";
-import {createUserId} from "../application/findNonExistId";
 import {emailsManager} from "../bussiness/bussiness-service";
 import {jwtService} from "../application/jwt-service";
 import {usersRepository} from "../repositories/users-repository-db";
@@ -51,20 +53,23 @@ authRouter.post('/login',
         }
         //INPUT
         const {loginOrEmail, password} = req.body
+        const ipAddress = requestIp.getClientIp(req)
+        const deviceName = req.device.name ? req.device.name : ''
+        const deviceId = await createDeviceId()
         //BLL
         const user = await authBusinessLayer.IsUserExist(loginOrEmail, password)
         //RETURN
         if (user) {
             //create the pair of tokens and put them into db
             const accessToken = await jwtService.createAccessJWT(user)
-            const refreshToken = await jwtService.createRefreshJWT(user)
+            const refreshToken = await jwtService.createRefreshJWT(user, deviceId!, deviceName!, ipAddress!)
             //send response with tokens
             res
                 .cookie('refreshToken', refreshToken, {
                     // maxAge: 20000 * 1000,
                     maxAge: 20 * 1000,
                     httpOnly: true,
-                    secure: true
+                    secure: false
                 })
                 .status(200)
                 .json({accessToken: accessToken})
@@ -78,17 +83,21 @@ authRouter.post('/login',
 authRouter.post('/refresh-token',
     checkRefreshToken,
     async (req: Request, res: Response) => {
-        //take refreshToken token from cookie
+        //INPUT
         const refreshToken = req.cookies.refreshToken
-        //since validation is passed, so we can add refreshToken in black list
+        const ipAddress1 = req.socket.remoteAddress;
+        const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        const deviceId = req.get('deviceId') ? req.get('deviceId') : '';
+        const deviceName = req.get('deviceName') ? req.get('deviceName') : '';
+        //BLL - since validation is passed, so we can add refreshToken in black list
         blackList.push(refreshToken)
         const _user = jwtService.getUserByRefreshToken(refreshToken)
         const user = await usersRepository.findUserByEmail(_user?.email)
-        //create the pair of new tokens
+        //RETURN
         if (user) {
             //create the pair of tokens and put them into db
             const accessToken = await jwtService.createAccessJWT(user)
-            const refreshToken = await jwtService.createRefreshJWT(user)
+            const refreshToken = await jwtService.createRefreshJWT(user, deviceId!, deviceName!, ipAddress1!)
             //send response with tokens
             res
                 .cookie('refreshToken', refreshToken, {

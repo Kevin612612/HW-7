@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUserId = exports.createId = void 0;
+exports.createDeviceId = exports.createUserId = exports.createId = void 0;
 const mongodb_1 = require("../repositories/mongodb");
 const createId = (collection) => __awaiter(void 0, void 0, void 0, function* () {
     let id = 1;
@@ -36,6 +36,18 @@ const createUserId = () => __awaiter(void 0, void 0, void 0, function* () {
     return userId.toString();
 });
 exports.createUserId = createUserId;
+const createDeviceId = () => __awaiter(void 0, void 0, void 0, function* () {
+    let deviceId = 1;
+    while (deviceId) {
+        let token = yield mongodb_1.refreshTokensCollection.findOne({ deviceId: deviceId.toString() });
+        if (!token) {
+            break;
+        }
+        deviceId++;
+    }
+    return deviceId.toString();
+});
+exports.createDeviceId = createDeviceId;
 //
 // export const createBlogId  = async (): Promise<string> => {
 //     let blogId = 1

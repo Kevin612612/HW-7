@@ -1,13 +1,18 @@
-//this repository have to be async
+//this repository has to be async
 
 
 
 import {MongoClient} from "mongodb";
 
 import * as dotenv from 'dotenv'
-import {blogViewModel, commentViewModel, postViewModel, userDataModel} from "../types";
-
 dotenv.config()
+
+import {blogViewModel} from "../types/blogs";
+import {postViewModel} from "../types/posts";
+import {userDataModel} from "../types/users";
+import {commentViewModel} from "../types/comments";
+import {refreshTokensDataModel} from "../types/refreshTokens";
+
 
 //connection to mongodb
 const mongoUri = process.env.MONGO_URL! // || "mongodb://0.0.0.0:27017";
@@ -19,6 +24,8 @@ export const blogsCollection = db.collection<blogViewModel>("blogs")
 export const postsCollection = db.collection<postViewModel>("posts")
 export const usersCollection = db.collection<userDataModel>("users")
 export const commentsCollection = db.collection<commentViewModel>("comments")
+export const refreshTokensCollection = db.collection<refreshTokensDataModel>("refreshTokens")
+
 
 export async function runDb() {
     try {
@@ -34,5 +41,5 @@ export async function runDb() {
     }
 }
 
-
+//black list of refreshTokens
 export let blackList : string[] = []

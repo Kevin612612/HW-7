@@ -8,7 +8,7 @@
 //(4) deleteComment
 //(5) findCommentById
 
-import {commentViewModel} from "../types";
+import {commentViewModel} from "../types/comments";
 import {commentsCollection} from "./mongodb";
 
 export const commentsRepository = {
