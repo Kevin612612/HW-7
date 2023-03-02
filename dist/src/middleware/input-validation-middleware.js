@@ -10,12 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tokenValidation1 = exports.tokenValidation = exports.commentValidation = exports.codeValidation = exports.usersEmailValidation1 = exports.usersEmailValidation2 = exports.usersEmailValidation = exports.usersPasswordValidation = exports.usersLoginValidation1 = exports.usersLoginValidation = exports.usersIdExtractingFromBody = exports.userIdValidation = exports.contentValidation = exports.shortDescriptionValidation = exports.titleValidation = exports.postExtractingFromParams = exports.postIdValidation = exports.newWebSiteUrlValidation = exports.descriptionValidation = exports.nameValidation = exports.blogExtractingFromBody = exports.blogExtractingFromParams = exports.blogIdValidationInParams = exports.blogIdValidationInBody = void 0;
+exports.deviceIdValidation = exports.tokenValidation1 = exports.tokenValidation = exports.commentValidation = exports.codeValidation = exports.usersEmailValidation1 = exports.usersEmailValidation2 = exports.usersEmailValidation = exports.usersPasswordValidation = exports.usersLoginValidation1 = exports.usersLoginValidation = exports.usersIdExtractingFromBody = exports.userIdValidation = exports.contentValidation = exports.shortDescriptionValidation = exports.titleValidation = exports.postExtractingFromParams = exports.postIdValidation = exports.newWebSiteUrlValidation = exports.descriptionValidation = exports.nameValidation = exports.blogExtractingFromBody = exports.blogExtractingFromParams = exports.blogIdValidationInParams = exports.blogIdValidationInBody = void 0;
 const express_validator_1 = require("express-validator");
 const blogs_repository_db_1 = require("../repositories/blogs-repository-db");
 const posts_repository_db_1 = require("../repositories/posts-repository-db");
 const users_repository_db_1 = require("../repositories/users-repository-db");
 const mongodb_1 = require("../repositories/mongodb");
+const refreshTokens_repository_db_1 = require("../repositories/refreshTokens-repository-db");
 //blogs validation
 exports.blogIdValidationInBody = (0, express_validator_1.body)('blogId')
     .isLength({ max: 5 }); //здесь я схитрил))
@@ -161,3 +162,10 @@ exports.commentValidation = (0, express_validator_1.body)('content')
 //token validation
 exports.tokenValidation = (0, express_validator_1.header)('authorization').isJWT();
 exports.tokenValidation1 = (0, express_validator_1.cookie)('refreshToken').isJWT();
+exports.deviceIdValidation = (0, express_validator_1.param)('deviceId')
+    .custom((value) => __awaiter(void 0, void 0, void 0, function* () {
+    const deviceId = yield refreshTokens_repository_db_1.refreshTokensRepository.findUserByDeviceId(value);
+    if (!deviceId)
+        throw new Error('deviceId doesn\'t exist');
+    return true;
+}));

@@ -6,7 +6,7 @@ import {createUser} from "./users.api.test";
 jest.setTimeout(60000)
 
 
-describe('GET DEVICES',  () => {
+describe('GET DEVICES', () => {
     //create user -> post user -> login user from 4 devices -> send refreshToken -> get devices list
 
     //create user
@@ -16,7 +16,7 @@ describe('GET DEVICES',  () => {
     let cookies: string[] = [];
 
     //post user
-    test('post user', async() => {
+    test('post user', async () => {
         const result = await request(app)
             .post(`/users`)
             .auth("admin", "qwerty", {type: "basic"})
@@ -36,7 +36,7 @@ describe('GET DEVICES',  () => {
         it(`should login user from device ${devicesList[i]}`, async () => {
             const res = await request(app)
                 .post('/auth/login')
-                .send({ loginOrEmail: user.login, password: user.password })
+                .send({loginOrEmail: user.login, password: user.password})
                 .set('Accept', 'application/json')
                 .set('User-Agent', devicesList[i])
                 .expect('Content-Type', /json/)
@@ -62,7 +62,7 @@ describe('GET DEVICES',  () => {
 
 
 describe('DELETE DEVICES', () => {
-    //create user -> post user -> login user from 4 devices -> send refreshToken -> get devices list
+    //create user -> post user -> login user from 3 devices -> send refreshToken -> get devices list
 
     //create user
     const user = createUser()
@@ -71,7 +71,7 @@ describe('DELETE DEVICES', () => {
     let cookies: string[] = [];
 
     //post user
-    test('post user', async() => {
+    test('post user', async () => {
         const result = await request(app)
             .post(`/users`)
             .auth("admin", "qwerty", {type: "basic"})
@@ -84,13 +84,13 @@ describe('DELETE DEVICES', () => {
 
     //login from 3 devices
     const devicesList = ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
-        'AppleWebKit/537.36 (KHTML, like Gecko)',
+        'AppleWebKit/537.36 (HTML, like Gecko)',
         'Chrome/88.0.4324.192']
     for (let i = 0; i < devicesList.length; i++) {
         it(`should login user from device ${devicesList[i]}`, async () => {
             const res = await request(app)
                 .post('/auth/login')
-                .send({ loginOrEmail: user.login, password: user.password })
+                .send({loginOrEmail: user.login, password: user.password})
                 .set('Accept', 'application/json')
                 .set('User-Agent', devicesList[i])
                 .expect('Content-Type', /json/)
@@ -108,4 +108,41 @@ describe('DELETE DEVICES', () => {
         // respose.body
         console.log(res.body)
     });
+})
+
+
+describe('DELETE DEVICE', () => {
+    //create user -> post user -> login user -> send refreshToken & deviceId -> should delete device
+
+    //create user
+    const user = createUser()
+
+    //post user
+    test('post user', async () => {
+        const result = await request(app)
+            .post(`/users`)
+            .auth("admin", "qwerty", {type: "basic"})
+            .send({
+                login: user.login,
+                password: user.password,
+                email: user.email,
+                deviceId: 1
+            })
+    })
+
+    //login
+    it(`should login user and then delete him`, async () => {
+        const res1 = await request(app)
+            .post('/auth/login')
+            .send({loginOrEmail: user.login, password: user.password})
+            .set('Accept', 'application/json')
+            .set('User-Agent', 'Chrome')
+        const refreshToken = res1.headers['set-cookie']
+        const deviceId = 1333333333
+        const res2 = await request(app)
+            .delete(`/security/devices/${deviceId}`)
+            .set('Cookie', refreshToken)
+        console.log(res2.body)
+    });
+
 })

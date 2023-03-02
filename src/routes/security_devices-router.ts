@@ -6,14 +6,18 @@
 //delete deviceId
 
 import {Request, Response, Router} from "express";
-import {checkRefreshToken} from "../middleware/authorization-middleware";
-import {refreshTokensBusinessLayer} from "../BLL/refresh-tokens-BLL";
 import {jwtService} from "../application/jwt-service";
+import {validationResult} from "express-validator";
+
+import {refreshTokensBusinessLayer} from "../BLL/refresh-tokens-BLL";
+import {checkRefreshToken} from "../middleware/authorization-middleware";
+import {deviceIdValidation} from "../middleware/input-validation-middleware";
+
 
 
 export const deviceRouter = Router({})
 
-//get devices - returns all devices with active sessions for current user
+//get devices
 deviceRouter.get('/devices',
     checkRefreshToken,
     async (req: Request, res: Response) => {
@@ -37,10 +41,22 @@ deviceRouter.delete('/devices',
         res.status(204).send(allOtherDevices)
     })
 
-//get devices
+//delete device
 deviceRouter.delete('/devices/:deviceId',
+    deviceIdValidation,
     checkRefreshToken,
     async (req: Request, res: Response) => {
+        //COLLECTION of ERRORS
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const errs = errors.array({onlyFirstError: true})
+            const result = {
+                errorsMessages: errs.map(e => {
+                    return {message: e.msg, field: e.param}
+                })
+            }
+            return res.status(400).json(result)
+        }
         //INPUT
         const deviceId = req.params.deviceId
         const refreshToken = req.cookies.refreshToken

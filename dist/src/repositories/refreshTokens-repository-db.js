@@ -16,6 +16,7 @@ exports.refreshTokensRepository = void 0;
 //(3) find token
 //(4) delete others
 //(5) delete this
+//(6) find by deviceId
 const mongodb_1 = require("./mongodb");
 exports.refreshTokensRepository = {
     //(1) method returns structured Array
@@ -52,6 +53,13 @@ exports.refreshTokensRepository = {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield mongodb_1.refreshTokensCollection.deleteOne({ "userId": userId, "deviceId": deviceId });
             return result.acknowledged;
+        });
+    },
+    //(3) method finds by deviceId
+    findUserByDeviceId(deviceId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield mongodb_1.refreshTokensCollection.findOne({ deviceId: deviceId });
+            return result === null || result === void 0 ? void 0 : result.deviceId;
         });
     },
 };

@@ -6,6 +6,7 @@
 //(3) find token
 //(4) delete others
 //(5) delete this
+//(6) find by deviceId
 
 
 import {refreshTokensCollection, usersCollection} from "./mongodb";
@@ -46,4 +47,9 @@ export const refreshTokensRepository = {
         return result.acknowledged
     },
 
+    //(3) method finds by deviceId
+    async findUserByDeviceId(deviceId: string): Promise<string | undefined> {
+        const result = await refreshTokensCollection.findOne({deviceId: deviceId})
+        return result?.deviceId
+    },
 }

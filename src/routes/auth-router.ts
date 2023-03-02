@@ -58,7 +58,7 @@ authRouter.post('/login',
         const userAgent = req.headers['user-agent']
         const parser = new UAParser(userAgent);
         const deviceName = parser.getResult().ua ? parser.getResult().ua : 'noname';
-        const deviceId = await createDeviceId()
+        const deviceId = req.body.deviceId ? req.body.deviceId : await createDeviceId()
         //BLL
         const user = await authBusinessLayer.IsUserExist(loginOrEmail, password)
         //RETURN

@@ -54,7 +54,7 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
     const userAgent = req.headers['user-agent'];
     const parser = new ua_parser_js_1.default(userAgent);
     const deviceName = parser.getResult().ua ? parser.getResult().ua : 'noname';
-    const deviceId = yield (0, findNonExistId_1.createDeviceId)();
+    const deviceId = req.body.deviceId ? req.body.deviceId : yield (0, findNonExistId_1.createDeviceId)();
     //BLL
     const user = yield auth_BLL_1.authBusinessLayer.IsUserExist(loginOrEmail, password);
     //RETURN

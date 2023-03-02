@@ -8,6 +8,7 @@ import {blogsRepository} from "../repositories/blogs-repository-db";
 import {postsRepository} from "../repositories/posts-repository-db";
 import {usersRepository} from "../repositories/users-repository-db";
 import {usersCollection} from "../repositories/mongodb";
+import {refreshTokensRepository} from "../repositories/refreshTokens-repository-db";
 
 
 //blogs validation
@@ -179,3 +180,10 @@ export const commentValidation = body('content')
 export const tokenValidation = header('authorization').isJWT()
 
 export const tokenValidation1 = cookie('refreshToken').isJWT()
+
+export const deviceIdValidation = param('deviceId')
+    .custom(async value => {
+        const deviceId = await refreshTokensRepository.findUserByDeviceId(value)
+        if (!deviceId) throw new Error('deviceId doesn\'t exist')
+        return true
+    })
