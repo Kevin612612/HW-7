@@ -81,19 +81,20 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
 exports.authRouter.post('/refresh-token', authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //INPUT
     const refreshToken = req.cookies.refreshToken;
-    const ipAddress1 = req.socket.remoteAddress;
-    const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    const deviceId = req.get('deviceId') ? req.get('deviceId') : '';
-    const deviceName = req.get('deviceName') ? req.get('deviceName') : '';
+    const ipAddress = req.socket.remoteAddress;
+    const userAgent = req.headers['user-agent'];
+    const parser = new ua_parser_js_1.default(userAgent);
+    const deviceName = parser.getResult().ua ? parser.getResult().ua : 'noname';
+    const deviceId = req.body.deviceId ? req.body.deviceId : yield (0, findNonExistId_1.createDeviceId)();
     //BLL - since validation is passed, so we can add refreshToken in black list
     mongodb_1.blackList.push(refreshToken);
-    const _user = jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);
-    const user = yield users_repository_db_1.usersRepository.findUserByEmail(_user === null || _user === void 0 ? void 0 : _user.email);
+    const payload = jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);
+    const user = yield users_repository_db_1.usersRepository.findUserByLoginOrEmail(payload === null || payload === void 0 ? void 0 : payload.login);
     //RETURN
     if (user) {
         //create the pair of tokens and put them into db
         const accessToken = yield jwt_service_1.jwtService.createAccessJWT(user);
-        const refreshToken = yield jwt_service_1.jwtService.createRefreshJWT(user, deviceId, deviceName, ipAddress1);
+        const refreshToken = yield jwt_service_1.jwtService.createRefreshJWT(user, deviceId, deviceName, ipAddress);
         //send response with tokens
         res
             .cookie('refreshToken', refreshToken, {

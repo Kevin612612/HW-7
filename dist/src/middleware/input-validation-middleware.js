@@ -184,7 +184,7 @@ const deviceIdValidation = (req, res, next) => __awaiter(void 0, void 0, void 0,
         const token = yield refreshTokens_repository_db_1.refreshTokensRepository.findTokenByUserIdAndDeviceId(userId, deviceId);
         //if it doesn't exist throw error
         if (!token) {
-            return res.status(401).send({ error: 'There is no user with such deviceId' });
+            return res.status(404).send({ error: 'There is no user with such deviceId' });
         }
     }
     catch (err) {

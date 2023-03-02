@@ -88,19 +88,20 @@ authRouter.post('/refresh-token',
     async (req: Request, res: Response) => {
         //INPUT
         const refreshToken = req.cookies.refreshToken
-        const ipAddress1 = req.socket.remoteAddress;
-        const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        const deviceId = req.get('deviceId') ? req.get('deviceId') : '';
-        const deviceName = req.get('deviceName') ? req.get('deviceName') : '';
+        const ipAddress = req.socket.remoteAddress;
+        const userAgent = req.headers['user-agent']
+        const parser = new UAParser(userAgent);
+        const deviceName = parser.getResult().ua ? parser.getResult().ua : 'noname';
+        const deviceId = req.body.deviceId ? req.body.deviceId : await createDeviceId()
         //BLL - since validation is passed, so we can add refreshToken in black list
         blackList.push(refreshToken)
-        const _user = jwtService.getUserByRefreshToken(refreshToken)
-        const user = await usersRepository.findUserByEmail(_user?.email)
+        const payload = jwtService.getUserByRefreshToken(refreshToken)
+        const user = await usersRepository.findUserByLoginOrEmail(payload?.login)
         //RETURN
         if (user) {
             //create the pair of tokens and put them into db
             const accessToken = await jwtService.createAccessJWT(user)
-            const refreshToken = await jwtService.createRefreshJWT(user, deviceId!, deviceName!, ipAddress1!)
+            const refreshToken = await jwtService.createRefreshJWT(user, deviceId!, deviceName!, ipAddress!)
             //send response with tokens
             res
                 .cookie('refreshToken', refreshToken, {
