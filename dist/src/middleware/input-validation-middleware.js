@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deviceIdValidation = exports.tokenValidation1 = exports.tokenValidation = exports.commentValidation = exports.codeValidation = exports.usersEmailValidation1 = exports.usersEmailValidation2 = exports.usersEmailValidation = exports.usersPasswordValidation = exports.usersLoginValidation1 = exports.usersLoginValidation = exports.usersIdExtractingFromBody = exports.userIdValidation = exports.contentValidation = exports.shortDescriptionValidation = exports.titleValidation = exports.postExtractingFromParams = exports.postIdValidation = exports.newWebSiteUrlValidation = exports.descriptionValidation = exports.nameValidation = exports.blogExtractingFromBody = exports.blogExtractingFromParams = exports.blogIdValidationInParams = exports.blogIdValidationInBody = void 0;
+exports.checkRequestNumber = exports.memoryRequests = exports.deviceIdValidation = exports.tokenValidation1 = exports.tokenValidation = exports.commentValidation = exports.codeValidation = exports.usersEmailValidation1 = exports.usersEmailValidation2 = exports.usersEmailValidation = exports.usersPasswordValidation = exports.usersLoginValidation1 = exports.usersLoginValidation = exports.usersIdExtractingFromBody = exports.userIdValidation = exports.contentValidation = exports.shortDescriptionValidation = exports.titleValidation = exports.postExtractingFromParams = exports.postIdValidation = exports.newWebSiteUrlValidation = exports.descriptionValidation = exports.nameValidation = exports.blogExtractingFromBody = exports.blogExtractingFromParams = exports.blogIdValidationInParams = exports.blogIdValidationInBody = void 0;
 const express_validator_1 = require("express-validator");
 const blogs_repository_db_1 = require("../repositories/blogs-repository-db");
 const posts_repository_db_1 = require("../repositories/posts-repository-db");
@@ -198,3 +198,17 @@ const deviceIdValidation = (req, res, next) => __awaiter(void 0, void 0, void 0,
     next();
 });
 exports.deviceIdValidation = deviceIdValidation;
+exports.memoryRequests = [];
+const checkRequestNumber = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const path = req.path;
+    const ip = req.ip;
+    const requestsOfOneEndPoint = exports.memoryRequests.filter(x => x.ip === ip && x.path === path);
+    const currentDate = Date.now();
+    const requestsNumber = requestsOfOneEndPoint.filter(x => (currentDate - x.date) <= 10000);
+    if (requestsNumber.length >= 5) {
+        return res.sendStatus(429);
+    }
+    exports.memoryRequests.push({ ip, path, date: currentDate });
+    next();
+});
+exports.checkRequestNumber = checkRequestNumber;

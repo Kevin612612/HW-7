@@ -21,7 +21,7 @@ import {
     usersLoginValidation,
     usersEmailValidation,
     codeValidation,
-    usersEmailValidation2
+    usersEmailValidation2, checkRequestNumber
 } from "../middleware/input-validation-middleware";
 import {authMiddleWare, checkRefreshToken} from "../middleware/authorization-middleware";
 import {createDeviceId, createUserId} from "../application/findNonExistId";
@@ -39,6 +39,7 @@ export const authRouter = Router({})
 
 //login
 authRouter.post('/login',
+    checkRequestNumber,
     oneOf([usersLoginValidation1, usersEmailValidation1]),
     usersPasswordValidation,
     async (req: Request, res: Response) => {
@@ -85,6 +86,7 @@ authRouter.post('/login',
 
 //new pair of tokens
 authRouter.post('/refresh-token',
+    checkRequestNumber,
     checkRefreshToken,
     async (req: Request, res: Response) => {
         //INPUT
@@ -124,6 +126,7 @@ authRouter.post('/refresh-token',
 
 //registration
 authRouter.post('/registration',
+    checkRequestNumber,
     usersLoginValidation,
     usersPasswordValidation,
     usersEmailValidation,
@@ -154,6 +157,7 @@ authRouter.post('/registration',
 
 //registration-confirmation
 authRouter.post('/registration-confirmation',
+    checkRequestNumber,
     codeValidation,
     async (req: Request, res: Response) => {
         //COLLECTION of ERRORS
@@ -177,6 +181,7 @@ authRouter.post('/registration-confirmation',
 
 //resend-registration-code
 authRouter.post('/registration-email-resending',
+    checkRequestNumber,
     usersEmailValidation2,
     async (req: Request, res: Response) => {
         //COLLECTION of ERRORS

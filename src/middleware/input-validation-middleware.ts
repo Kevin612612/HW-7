@@ -216,3 +216,17 @@ export const deviceIdValidation = async (req: Request, res: Response, next: Next
     }
     next();
 }
+
+export const memoryRequests: {ip: string, path: string, date: number}[] = []
+export const checkRequestNumber = async (req: Request, res: Response, next: NextFunction) => {
+    const path = req.path
+    const ip = req.ip
+    const requestsOfOneEndPoint = memoryRequests.filter(x => x.ip === ip && x.path === path)
+    const currentDate = Date.now()
+    const requestsNumber = requestsOfOneEndPoint.filter(x => (currentDate - x.date) <= 10000)
+    if (requestsNumber.length >= 5) {
+        return res.sendStatus(429)
+    }
+    memoryRequests.push({ip, path, date: currentDate})
+    next()
+}

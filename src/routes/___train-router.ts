@@ -7,6 +7,7 @@ import UAParser from "ua-parser-js";
 import {checkRefreshToken} from "../middleware/authorization-middleware";
 import {refreshTokensBusinessLayer} from "../BLL/refresh-tokens-BLL";
 import {deviceRouter} from "./security_devices-router";
+import {checkRequestNumber} from "../middleware/input-validation-middleware";
 
 export const ___trainRouter = Router({})
 
@@ -66,9 +67,11 @@ ___trainRouter.get('/devicename',
 
 
 ___trainRouter.get('/ip',
+    checkRequestNumber,
     async (req: Request, res: Response) => {
         const ip = req.ip
-        res.json(ip)
+        const path = req.path
+        res.json({ip, path})
     })
 
 

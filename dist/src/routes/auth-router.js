@@ -37,7 +37,7 @@ const ua_parser_js_1 = __importDefault(require("ua-parser-js"));
 const refreshTokens_repository_db_1 = require("../repositories/refreshTokens-repository-db");
 exports.authRouter = (0, express_1.Router)({});
 //login
-exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validation_middleware_1.usersLoginValidation1, input_validation_middleware_1.usersEmailValidation1]), input_validation_middleware_1.usersPasswordValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/login', input_validation_middleware_1.checkRequestNumber, (0, express_validator_1.oneOf)([input_validation_middleware_1.usersLoginValidation1, input_validation_middleware_1.usersEmailValidation1]), input_validation_middleware_1.usersPasswordValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //COLLECTION of ERRORS
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
@@ -79,7 +79,7 @@ exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validati
     }
 }));
 //new pair of tokens
-exports.authRouter.post('/refresh-token', authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/refresh-token', input_validation_middleware_1.checkRequestNumber, authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //INPUT
     const refreshToken = req.cookies.refreshToken;
     const ipAddress = req.socket.remoteAddress;
@@ -115,7 +115,7 @@ exports.authRouter.post('/refresh-token', authorization_middleware_1.checkRefres
     }
 }));
 //registration
-exports.authRouter.post('/registration', input_validation_middleware_1.usersLoginValidation, input_validation_middleware_1.usersPasswordValidation, input_validation_middleware_1.usersEmailValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/registration', input_validation_middleware_1.checkRequestNumber, input_validation_middleware_1.usersLoginValidation, input_validation_middleware_1.usersPasswordValidation, input_validation_middleware_1.usersEmailValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //COLLECTION of ERRORS
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
@@ -141,7 +141,7 @@ exports.authRouter.post('/registration', input_validation_middleware_1.usersLogi
     }
 }));
 //registration-confirmation
-exports.authRouter.post('/registration-confirmation', input_validation_middleware_1.codeValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/registration-confirmation', input_validation_middleware_1.checkRequestNumber, input_validation_middleware_1.codeValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //COLLECTION of ERRORS
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
@@ -161,7 +161,7 @@ exports.authRouter.post('/registration-confirmation', input_validation_middlewar
     res.status(204).send(result);
 }));
 //resend-registration-code
-exports.authRouter.post('/registration-email-resending', input_validation_middleware_1.usersEmailValidation2, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/registration-email-resending', input_validation_middleware_1.checkRequestNumber, input_validation_middleware_1.usersEmailValidation2, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //COLLECTION of ERRORS
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
