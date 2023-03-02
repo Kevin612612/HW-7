@@ -12,12 +12,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.refreshTokensBusinessLayer = void 0;
 const refreshTokens_repository_db_1 = require("../repositories/refreshTokens-repository-db");
+const jwt_service_1 = require("../application/jwt-service");
 exports.refreshTokensBusinessLayer = {
     //(1) this method transform all found data and returns them to router
     allDevices(refreshToken) {
         return __awaiter(this, void 0, void 0, function* () {
             //find refreshToken by value and return userId
-            const userId = yield refreshTokens_repository_db_1.refreshTokensRepository.findUserByToken(refreshToken);
+            const userId = jwt_service_1.jwtService.getUserByRefreshToken(refreshToken).userId;
             //find all refreshTokens by that userId and non expired date
             if (userId) {
                 const result = yield refreshTokens_repository_db_1.refreshTokensRepository.allActiveDevices(userId);

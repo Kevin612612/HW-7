@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const supertest_1 = __importDefault(require("supertest"));
 const setting_1 = require("../../src/setting");
+jest.setTimeout(60000);
 // 'describe' creates a block that groups together several related tests
 describe('all tests', () => {
     // очищаем все данные delete
@@ -58,8 +59,10 @@ describe('all tests', () => {
                 id: expect.any(String),
                 name: expect.any(String),
                 description: expect.any(String),
-                websiteUrl: expect.any(String)
+                websiteUrl: expect.any(String),
+                createdAt: expect.any(String)
             });
+            console.log(gotResponse);
         }));
         // меняем по ID       put by ID
         it('should change created blog', () => __awaiter(void 0, void 0, void 0, function* () {

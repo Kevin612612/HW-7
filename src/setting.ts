@@ -12,7 +12,7 @@ import {commentsRouter} from "./routes/comments-router";
 import {emailRouter}    from "./routes/email-router";
 import {deviceRouter}   from "./routes/security_devices-router";
 import {testingRouter}  from "./routes/testing-router";
-import {trainRouter}    from "./routes/train-router";
+import {___trainRouter}    from "./routes/___train-router";
 
 
 export const app = express()
@@ -47,5 +47,5 @@ app.use('/email', emailRouter)
 
 app.use('/testing', testingRouter)
 
-app.use('/train', trainRouter)
+app.use('/train', ___trainRouter)
 

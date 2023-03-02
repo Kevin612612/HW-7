@@ -27,7 +27,7 @@ testingRouter.delete('/all-data', async (req: Request, res: Response) => {
         res.send(204)
     }*/
 
-    const collections = ["blogs", "posts", "users", "comments"];
+    const collections = ["blogs", "posts", "users", "comments", "refreshTokens"];
     //deleting
     const deleteEachCollection = collections.map(collection => db.collection(collection).deleteMany({}));
     const result = await Promise.all(deleteEachCollection);

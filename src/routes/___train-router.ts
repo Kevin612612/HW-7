@@ -2,21 +2,23 @@ import {Request, Response, Router} from "express";
 import requestIp from 'request-ip';
 
 import DeviceDetector from 'node-device-detector'
+import UAParser from "ua-parser-js";
+
 import {checkRefreshToken} from "../middleware/authorization-middleware";
 import {refreshTokensBusinessLayer} from "../BLL/refresh-tokens-BLL";
 import {deviceRouter} from "./security_devices-router";
 
-export const trainRouter = Router({})
+export const ___trainRouter = Router({})
 
 
-trainRouter.get('/detect', (req: Request, res: Response) => {
+___trainRouter.get('/detect', (req: Request, res: Response) => {
     const {type, os, browser} = req.device;
     res.send(`You are using a ${type} device running ${os} and using ${browser}.`);
     // res.send(req.device)
 })
 
 
-trainRouter.get('/detect1',
+___trainRouter.get('/detect1',
     function (req: Request, res: Response) {
         const detector = new DeviceDetector();
 
@@ -32,7 +34,7 @@ trainRouter.get('/detect1',
     })
 
 
-trainRouter.get('/getIP',
+___trainRouter.get('/getIP',
     function (req: Request, res: Response) {
         const ipAddress1 = req.socket.remoteAddress
         const ipAddress2 = req.ip
@@ -47,11 +49,21 @@ trainRouter.get('/getIP',
     })
 
 
-trainRouter.get('/devices',
+___trainRouter.get('/devices',
     async (req: Request, res: Response) => {
         const refreshToken = req.cookies.refreshToken
         res.json({refreshToken})
     })
+
+
+___trainRouter.get('/devicename',
+    async (req: Request, res: Response) => {
+        const userAgent = req.headers['user-agent']
+        const parser = new UAParser(userAgent);
+        const deviceName = parser.getResult().ua
+        res.json(deviceName)
+    })
+
 
 
 

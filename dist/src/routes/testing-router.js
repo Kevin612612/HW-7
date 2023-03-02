@@ -1,4 +1,3 @@
-
 "use strict";
 //Presentation Layer
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -30,7 +29,7 @@ exports.testingRouter.delete('/all-data', (req, res) => __awaiter(void 0, void 0
     if (result1.length == 0 && result2.length == 0 && result3.length == 0 && result4.length == 0) {
         res.send(204)
     }*/
-    const collections = ["blogs", "posts", "users", "comments"];
+    const collections = ["blogs", "posts", "users", "comments", "refreshTokens"];
     //deleting
     const deleteEachCollection = collections.map(collection => mongodb_1.db.collection(collection).deleteMany({}));
     const result = yield Promise.all(deleteEachCollection);

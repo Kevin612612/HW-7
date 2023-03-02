@@ -30,6 +30,7 @@ import {emailsManager} from "../bussiness/bussiness-service";
 import {jwtService} from "../application/jwt-service";
 import {usersRepository} from "../repositories/users-repository-db";
 import {blackList} from "../repositories/mongodb";
+import UAParser from "ua-parser-js";
 
 
 export const authRouter = Router({})
@@ -54,7 +55,9 @@ authRouter.post('/login',
         //INPUT
         const {loginOrEmail, password} = req.body
         const ipAddress = requestIp.getClientIp(req)
-        const deviceName = req.device.name ? req.device.name : ''
+        const userAgent = req.headers['user-agent']
+        const parser = new UAParser(userAgent);
+        const deviceName = parser.getResult().ua ? parser.getResult().ua : 'noname';
         const deviceId = await createDeviceId()
         //BLL
         const user = await authBusinessLayer.IsUserExist(loginOrEmail, password)
