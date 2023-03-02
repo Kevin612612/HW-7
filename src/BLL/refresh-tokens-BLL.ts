@@ -34,9 +34,9 @@ export const refreshTokensBusinessLayer = {
 
     //(2) this method terminates all other devices
     async terminateAllOtherDevices(refreshToken: string): Promise<boolean> {
-        const user = jwtService.getUserByRefreshToken(refreshToken)
-        if (user) {
-            return await refreshTokensRepository.deleteOthers(user.userId, user.deviceId)
+        const payload = jwtService.getUserByRefreshToken(refreshToken)
+        if (payload) {
+            return await refreshTokensRepository.deleteOthers(payload.userId, payload.deviceId)
         }
         return false
     },

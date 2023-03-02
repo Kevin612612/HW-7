@@ -65,5 +65,12 @@ ___trainRouter.get('/devicename',
     })
 
 
+___trainRouter.get('/ip',
+    async (req: Request, res: Response) => {
+        const ip = req.ip
+        res.json(ip)
+    })
+
+
 
 

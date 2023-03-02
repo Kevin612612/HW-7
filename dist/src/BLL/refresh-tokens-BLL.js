@@ -37,9 +37,9 @@ exports.refreshTokensBusinessLayer = {
     //(2) this method terminates all other devices
     terminateAllOtherDevices(refreshToken) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);
-            if (user) {
-                return yield refreshTokens_repository_db_1.refreshTokensRepository.deleteOthers(user.userId, user.deviceId);
+            const payload = jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);
+            if (payload) {
+                return yield refreshTokens_repository_db_1.refreshTokensRepository.deleteOthers(payload.userId, payload.deviceId);
             }
             return false;
         });

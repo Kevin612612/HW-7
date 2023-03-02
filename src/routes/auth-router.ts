@@ -92,10 +92,10 @@ authRouter.post('/refresh-token',
         const userAgent = req.headers['user-agent']
         const parser = new UAParser(userAgent);
         const deviceName = parser.getResult().ua ? parser.getResult().ua : 'noname';
-        const deviceId = req.body.deviceId ? req.body.deviceId : await createDeviceId()
+        const payload = jwtService.getUserByRefreshToken(refreshToken)
+        const deviceId = payload.deviceId
         //BLL - since validation is passed, so we can add refreshToken in black list
         blackList.push(refreshToken)
-        const payload = jwtService.getUserByRefreshToken(refreshToken)
         const user = await usersRepository.findUserByLoginOrEmail(payload?.login)
         //RETURN
         if (user) {
