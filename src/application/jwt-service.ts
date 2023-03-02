@@ -97,6 +97,7 @@ export const jwtService = {
             userId: user.userId,
             login: user.login,
             email: user.email,
+            deviceId: user.deviceId
         }
     },
 

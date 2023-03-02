@@ -38,7 +38,7 @@ deviceRouter.delete('/devices',
     })
 
 //get devices
-deviceRouter.delete('/devices/deviceId',
+deviceRouter.delete('/devices/:deviceId',
     checkRefreshToken,
     async (req: Request, res: Response) => {
         //INPUT

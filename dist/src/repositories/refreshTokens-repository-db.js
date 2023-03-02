@@ -41,9 +41,9 @@ exports.refreshTokensRepository = {
         });
     },
     //(4) method delete all tokens by this user  except current
-    deleteOthers(userId, refreshToken) {
+    deleteOthers(userId, deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield mongodb_1.refreshTokensCollection.deleteMany({ "userId": userId, "value": { $ne: refreshToken } });
+            const result = yield mongodb_1.refreshTokensCollection.deleteMany({ "userId": userId, "deviceId": { $ne: deviceId } });
             return result.acknowledged;
         });
     },

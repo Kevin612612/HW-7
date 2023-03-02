@@ -38,7 +38,7 @@ exports.deviceRouter.delete('/devices', authorization_middleware_1.checkRefreshT
     res.status(204).send(allOtherDevices);
 }));
 //get devices
-exports.deviceRouter.delete('/devices/deviceId', authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.deviceRouter.delete('/devices/:deviceId', authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //INPUT
     const deviceId = req.params.deviceId;
     const refreshToken = req.cookies.refreshToken;

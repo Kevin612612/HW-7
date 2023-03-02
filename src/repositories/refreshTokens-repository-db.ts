@@ -35,8 +35,8 @@ export const refreshTokensRepository = {
     },
 
     //(4) method delete all tokens by this user  except current
-    async deleteOthers(userId: string, refreshToken: string): Promise<boolean> {
-        const result = await refreshTokensCollection.deleteMany({"userId": userId, "value": {$ne: refreshToken}})
+    async deleteOthers(userId: string, deviceId: string): Promise<boolean> {
+        const result = await refreshTokensCollection.deleteMany({"userId": userId, "deviceId": {$ne: deviceId}})
         return result.acknowledged
     },
 

@@ -89,6 +89,7 @@ exports.jwtService = {
             userId: user.userId,
             login: user.login,
             email: user.email,
+            deviceId: user.deviceId
         };
     },
     //(5)check if a token has expired
