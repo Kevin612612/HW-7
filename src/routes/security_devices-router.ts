@@ -55,7 +55,7 @@ deviceRouter.delete('/devices/:deviceId',
                     return {message: e.msg, field: e.param}
                 })
             }
-            return res.status(400).json(result)
+            return res.status(401).json(result)
         }
         //INPUT
         const deviceId = req.params.deviceId

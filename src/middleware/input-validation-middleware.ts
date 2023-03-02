@@ -196,7 +196,12 @@ export const deviceIdValidation = async (req: Request, res: Response, next: Next
         const deviceId = req.params.deviceId
         //if it doesn't exist throw error
         if (!deviceId) {
-            return res.status(404).send({error: 'deviceId is not found'})
+            return res.status(404).send({error: 'deviceId is not found in params'})
+        }
+        //if it is correct
+        const result = await refreshTokensRepository.findUserByDeviceId(deviceId)
+        if (!result) {
+            return res.status(404).send({error: 'deviceId is not found in db'})
         }
         //retrieve userId from refreshToken
         const userId = jwtService.getUserByRefreshToken(req.cookies.refreshToken).userId
@@ -204,7 +209,7 @@ export const deviceIdValidation = async (req: Request, res: Response, next: Next
         const token = await refreshTokensRepository.findTokenByUserIdAndDeviceId(userId, deviceId)
         //if it doesn't exist throw error
         if (!token) {
-            return res.status(404).send({error: 'There is no user with such deviceId'});
+            return res.status(403).send({error: 'There is no user with such deviceId'});
         }
     } catch (err) {
         return res.status(401).send({error: 'Invalid deviceId'});

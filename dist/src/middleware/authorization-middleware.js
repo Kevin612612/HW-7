@@ -56,13 +56,13 @@ const checkRefreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     try {
         //take the refresh token from cookie
         const refreshToken = req.cookies.refreshToken;
-        //check if it is not included in black list
-        if (mongodb_1.blackList.includes(refreshToken)) {
-            return res.status(401).send({ error: 'Refresh token is already invalid' });
-        }
         //check if it exists
         if (!refreshToken) {
             return res.status(401).send({ error: 'Refresh token is not found)' });
+        }
+        //check if it is not included in black list
+        if (mongodb_1.blackList.includes(refreshToken)) {
+            return res.status(401).send({ error: 'Refresh token is already invalid' });
         }
         //does user from this token exist?
         const user = jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);

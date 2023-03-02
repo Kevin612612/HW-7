@@ -54,13 +54,13 @@ export const checkRefreshToken = async (req: Request, res: Response, next: NextF
     try {
         //take the refresh token from cookie
         const refreshToken = req.cookies.refreshToken
-        //check if it is not included in black list
-        if (blackList.includes(refreshToken)) {
-            return res.status(401).send({error: 'Refresh token is already invalid'})
-        }
         //check if it exists
         if (!refreshToken) {
             return res.status(401).send({error: 'Refresh token is not found)'});
+        }
+        //check if it is not included in black list
+        if (blackList.includes(refreshToken)) {
+            return res.status(401).send({error: 'Refresh token is already invalid'})
         }
         //does user from this token exist?
         const user = jwtService.getUserByRefreshToken(refreshToken)
