@@ -64,7 +64,7 @@ export const jwtService = {
         )
         //put it into db in user schema
         const result1 = await usersRepository.addRefreshToken(user, refreshToken, liveTime)
-        //put into refreshTokensCollection
+        //put it into refreshTokensCollection
         const refreshTokenObject: refreshTokensDataModel = {
             value: refreshToken,
             userId: user.id,

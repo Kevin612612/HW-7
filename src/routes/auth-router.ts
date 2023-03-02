@@ -31,6 +31,7 @@ import {jwtService} from "../application/jwt-service";
 import {usersRepository} from "../repositories/users-repository-db";
 import {blackList} from "../repositories/mongodb";
 import UAParser from "ua-parser-js";
+import {refreshTokensRepository} from "../repositories/refreshTokens-repository-db";
 
 
 export const authRouter = Router({})
@@ -94,9 +95,12 @@ authRouter.post('/refresh-token',
         const deviceName = parser.getResult().ua ? parser.getResult().ua : 'noname';
         const payload = jwtService.getUserByRefreshToken(refreshToken)
         const deviceId = payload.deviceId
-        //BLL - since validation is passed, so we can add refreshToken in black list
-        blackList.push(refreshToken)
         const user = await usersRepository.findUserByLoginOrEmail(payload?.login)
+        //BLL
+        //since validation is passed, so we can add refreshToken in black list
+        blackList.push(refreshToken)
+        //...and delete from DB
+        const deleteRefreshToken = await refreshTokensRepository.deleteOne(user!.id, deviceId)
         //RETURN
         if (user) {
             //create the pair of tokens and put them into db

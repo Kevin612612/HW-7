@@ -2,12 +2,14 @@
 
 
 //(1) get all active devices
+//(2) terminates all other devices
+//(3) terminates current devices
 
-import {blogsTypeSchema} from "../types/blogs";
-import {blogsRepository} from "../repositories/blogs-repository-db";
-import {blogsCollection} from "../repositories/mongodb";
+
+
+
 import {refreshTokensRepository} from "../repositories/refreshTokens-repository-db";
-import {refreshTokensDataModel, RefreshTokensTypeSchema} from "../types/refreshTokens";
+import {RefreshTokensTypeSchema} from "../types/refreshTokens";
 import {jwtService} from "../application/jwt-service";
 
 export const refreshTokensBusinessLayer = {

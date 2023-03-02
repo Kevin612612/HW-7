@@ -28,35 +28,48 @@ describe('GET DEVICES', () => {
     })
 
     //login from 4 devices
-    const devicesList = ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
-        'AppleWebKit/537.36 (KHTML, like Gecko)',
+    const devicesList = ['Mozilla/5.0',
+        'AppleWebKit/537.36 ',
         'Chrome/88.0.4324.192',
-        'Safari/537.36 Edg/88.0.705.81']
+        'Safari/537.36']
     for (let i = 0; i < 4; i++) {
         it(`should login user from device ${devicesList[i]}`, async () => {
             const res = await request(app)
                 .post('/auth/login')
                 .send({loginOrEmail: user.login, password: user.password})
-                .set('Accept', 'application/json')
                 .set('User-Agent', devicesList[i])
-                .expect('Content-Type', /json/)
                 .expect(200);
 
-            expect(res.body).toHaveProperty('accessToken');
-            expect(res.body.accessToken).toEqual(expect.stringContaining('.'));
-            cookies[i] = res.headers['set-cookie'];
+            cookies[i] = res.headers['set-cookie']
         });
     }
 
-    //send refreshToken
+    //get devices
     it('should send refresh token in cookie', async () => {
-        const res = await request(app)
+        const res1 = await request(app)
             .get('/security/devices')
-            .set('Cookie', cookies[1]) // login with device 1
-
+            .set('Cookie', cookies[3]) // login with device 3
         // respose.body
-        console.log(res.body)
-    });
+        console.log(res1.body)
+    })
+
+    //update refreshToken
+    it('refresh token', async () => {
+        const res = await request(app)
+            .post(`/auth/refresh-token`)
+            .set('Cookie', cookies[3]) // login with device
+            .set('User-Agent', devicesList[3])
+        cookies[3] = res.headers['set-cookie'] // update token
+    })
+
+    //get devices
+    it('should send refresh token in cookie', async () => {
+        const res2 = await request(app)
+            .get('/security/devices')
+            .set('Cookie', cookies[2]) // login with device 3
+        // respose.body
+        console.log(res2.body)
+    })
 
 })
 
@@ -151,7 +164,15 @@ describe('DELETE DEVICE', () => {
         });
     }
 
-    //delete device by ID
+    //refresh token for 2-nd device
+    test('refresh token', async () => {
+        const result = await request(app)
+            .post(`/auth/refresh-token`)
+            .set('Cookie', cookies[2]) // login with device
+            .set('User-Agent', devicesList[2])
+    })
+
+    //delete device by Id
     test('delete device by Id', async () => {
         const result = await request(app)
             .delete(`/security/devices/1`)

@@ -11,6 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.refreshTokensBusinessLayer = void 0;
+//(1) get all active devices
+//(2) terminates all other devices
+//(3) terminates current devices
 const refreshTokens_repository_db_1 = require("../repositories/refreshTokens-repository-db");
 const jwt_service_1 = require("../application/jwt-service");
 exports.refreshTokensBusinessLayer = {

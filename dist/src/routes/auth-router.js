@@ -34,6 +34,7 @@ const jwt_service_1 = require("../application/jwt-service");
 const users_repository_db_1 = require("../repositories/users-repository-db");
 const mongodb_1 = require("../repositories/mongodb");
 const ua_parser_js_1 = __importDefault(require("ua-parser-js"));
+const refreshTokens_repository_db_1 = require("../repositories/refreshTokens-repository-db");
 exports.authRouter = (0, express_1.Router)({});
 //login
 exports.authRouter.post('/login', (0, express_validator_1.oneOf)([input_validation_middleware_1.usersLoginValidation1, input_validation_middleware_1.usersEmailValidation1]), input_validation_middleware_1.usersPasswordValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -87,9 +88,12 @@ exports.authRouter.post('/refresh-token', authorization_middleware_1.checkRefres
     const deviceName = parser.getResult().ua ? parser.getResult().ua : 'noname';
     const payload = jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);
     const deviceId = payload.deviceId;
-    //BLL - since validation is passed, so we can add refreshToken in black list
-    mongodb_1.blackList.push(refreshToken);
     const user = yield users_repository_db_1.usersRepository.findUserByLoginOrEmail(payload === null || payload === void 0 ? void 0 : payload.login);
+    //BLL
+    //since validation is passed, so we can add refreshToken in black list
+    mongodb_1.blackList.push(refreshToken);
+    //...and delete from DB
+    const deleteRefreshToken = yield refreshTokens_repository_db_1.refreshTokensRepository.deleteOne(user.id, deviceId);
     //RETURN
     if (user) {
         //create the pair of tokens and put them into db
