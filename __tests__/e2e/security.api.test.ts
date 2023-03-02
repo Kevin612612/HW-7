@@ -62,6 +62,14 @@ describe('GET DEVICES', () => {
         cookies[3] = res.headers['set-cookie'] // update token
     })
 
+    //logout current session
+    it('logout', async () => {
+        const res = await request(app)
+            .post(`/auth/logout`)
+            .set('Cookie', cookies[3]) // login with device
+            .set('User-Agent', devicesList[3])
+    })
+
     //get devices
     it('should send refresh token in cookie', async () => {
         const res2 = await request(app)

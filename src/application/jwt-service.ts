@@ -119,12 +119,6 @@ export const jwtService = {
     //(6) make refreshToken Invalid
     async makeRefreshTokenExpired(token: string): Promise<boolean> {
         blackList.push(token)
-        //decode user
-        // const user: any = await jwt.verify(token, process.env.JWT_secret!)
-        // //find user by decoded login
-        // const userDb = await usersRepository.findUserByLoginOrEmail(user.login)
-        // //del token from this user
-        // const result =  await usersRepository.setRefreshTokenExpired(userDb!)
         return true
     },
 }

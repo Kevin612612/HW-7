@@ -111,12 +111,6 @@ exports.jwtService = {
     makeRefreshTokenExpired(token) {
         return __awaiter(this, void 0, void 0, function* () {
             mongodb_1.blackList.push(token);
-            //decode user
-            // const user: any = await jwt.verify(token, process.env.JWT_secret!)
-            // //find user by decoded login
-            // const userDb = await usersRepository.findUserByLoginOrEmail(user.login)
-            // //del token from this user
-            // const result =  await usersRepository.setRefreshTokenExpired(userDb!)
             return true;
         });
     },

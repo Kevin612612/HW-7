@@ -203,9 +203,15 @@ authRouter.post('/registration-email-resending',
 authRouter.post('/logout',
     checkRefreshToken,
     async (req: Request, res: Response) => {
+        //INPUT
+        const refreshToken = req.cookies.refreshToken
+        const payload = jwtService.getUserByRefreshToken(refreshToken)
+        //BLL
         //make refreshToken Expired/Invalid
-        const refreshToken = req.cookies.refreshToken;
         const result = await jwtService.makeRefreshTokenExpired(refreshToken)
+        //...and delete from DB
+        const deleteRefreshToken = await refreshTokensRepository.deleteOne(payload.userId, payload.deviceId)
+        //RETURN
         //clear the refreshToken from the cookies
         res.clearCookie('refreshToken').status(204).send('you\'re quit')
     })

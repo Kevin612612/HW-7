@@ -182,9 +182,15 @@ exports.authRouter.post('/registration-email-resending', input_validation_middle
 }));
 //logout
 exports.authRouter.post('/logout', authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    //make refreshToken Expired/Invalid
+    //INPUT
     const refreshToken = req.cookies.refreshToken;
+    const payload = jwt_service_1.jwtService.getUserByRefreshToken(refreshToken);
+    //BLL
+    //make refreshToken Expired/Invalid
     const result = yield jwt_service_1.jwtService.makeRefreshTokenExpired(refreshToken);
+    //...and delete from DB
+    const deleteRefreshToken = yield refreshTokens_repository_db_1.refreshTokensRepository.deleteOne(payload.userId, payload.deviceId);
+    //RETURN
     //clear the refreshToken from the cookies
     res.clearCookie('refreshToken').status(204).send('you\'re quit');
 }));
