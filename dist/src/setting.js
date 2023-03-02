@@ -26,6 +26,7 @@ const jsonBodyMiddleware = body_parser_1.default.json();
 exports.app.use(jsonBodyMiddleware);
 exports.app.use((0, cookie_parser_1.default)());
 exports.app.use(express_device_1.default.capture());
+exports.app.set('trust proxy', true);
 //HOME PAGE
 exports.app.get('/', (req, res) => {
     res.send(`<form>

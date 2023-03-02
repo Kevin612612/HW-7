@@ -72,7 +72,7 @@ authRouter.post('/login',
                     // maxAge: 20000 * 1000,
                     maxAge: 20 * 1000,
                     httpOnly: true,
-                    secure: false
+                    secure: true
                 })
                 .status(200)
                 .json({accessToken: accessToken})

@@ -27,6 +27,8 @@ app.use(cookieParser())
 
 app.use(device.capture())
 
+app.set('trust proxy', true)
+
 //HOME PAGE
 app.get('/', (req: Request, res: Response) => {
     res.send(`<form>

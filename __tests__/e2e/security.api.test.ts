@@ -9,10 +9,13 @@ jest.setTimeout(60000)
 describe('SECURITY router',  () => {
     //GET DEVICES
     //create user -> post user -> login user from 4 devices -> send refreshToken -> get devices list
+
     //create user
     const user = createUser()
+
     //create cookies
     let cookies: string[] = [];
+
     //post user
     test('post user', async() => {
         const result = await request(app)
@@ -41,6 +44,7 @@ describe('SECURITY router',  () => {
                 .expect(200);
 
             expect(res.body).toHaveProperty('accessToken');
+            expect(res.body.accessToken).toEqual(expect.stringContaining('.'));
             cookies[i] = res.headers['set-cookie'];
         });
     }
@@ -54,21 +58,6 @@ describe('SECURITY router',  () => {
         // respose.body
         console.log(res.body)
     });
-
-
-    // it('should be able to access user dashboard from all browsers', async () => {
-    //     for (let i = 0; i < cookies.length; i++) {
-    //         const res = await request(app)
-    //             .get('/security/devices')
-    //             .send({ loginOrEmail: user.login, password: user.password })
-    //             .set('Cookie', cookies[i])
-    //             .expect(200);
-    //
-    //         expect(res.text).toContain('Welcome to list of your devices (dashboard)');
-    //     }
-    // });
-
-
 
 
 
