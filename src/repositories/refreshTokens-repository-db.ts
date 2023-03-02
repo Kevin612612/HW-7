@@ -3,7 +3,7 @@
 
 //(1) all devices
 //(2) create token
-//(3) find token
+//(3) find token by userId and deviceId
 //(4) delete others
 //(5) delete this
 //(6) find by deviceId
@@ -29,10 +29,10 @@ export const refreshTokensRepository = {
         return result.acknowledged;
     },
 
-    //(3) method finds refreshToken
-    async findUserByToken(token: string): Promise<string | undefined> {
-        const result = await refreshTokensCollection.findOne({value: token})
-        return result?.userId
+    //(3) method finds refreshToken by userId and deviceId
+    async findTokenByUserIdAndDeviceId(userId: string, deviceId: string): Promise<string | undefined> {
+        const result = await refreshTokensCollection.findOne({userId: userId, deviceId: deviceId})
+        return result?.userId ? result.userId : undefined
     },
 
     //(4) method delete all tokens by this user  except current

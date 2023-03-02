@@ -17,6 +17,7 @@ const posts_repository_db_1 = require("../repositories/posts-repository-db");
 const users_repository_db_1 = require("../repositories/users-repository-db");
 const mongodb_1 = require("../repositories/mongodb");
 const refreshTokens_repository_db_1 = require("../repositories/refreshTokens-repository-db");
+const jwt_service_1 = require("../application/jwt-service");
 //blogs validation
 exports.blogIdValidationInBody = (0, express_validator_1.body)('blogId')
     .isLength({ max: 5 }); //здесь я схитрил))
@@ -162,10 +163,33 @@ exports.commentValidation = (0, express_validator_1.body)('content')
 //token validation
 exports.tokenValidation = (0, express_validator_1.header)('authorization').isJWT();
 exports.tokenValidation1 = (0, express_validator_1.cookie)('refreshToken').isJWT();
-exports.deviceIdValidation = (0, express_validator_1.param)('deviceId')
-    .custom((value) => __awaiter(void 0, void 0, void 0, function* () {
-    const deviceId = yield refreshTokens_repository_db_1.refreshTokensRepository.findUserByDeviceId(value);
-    if (!deviceId)
-        throw new Error('deviceId doesn\'t exist');
-    return true;
-}));
+// export const deviceIdValidation = param('deviceId')
+//     .custom(async value => {
+//         const deviceId = await refreshTokensRepository.findUserByDeviceId(value)
+//         if (!deviceId) throw new Error('deviceId doesn\'t exist')
+//         return true
+//     })
+//check deviceId
+const deviceIdValidation = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        //take the deviceId that should be deleted
+        const deviceId = req.params.deviceId;
+        //if it doesn't exist throw error
+        if (!deviceId) {
+            return res.status(404).send({ error: 'deviceId is not found' });
+        }
+        //retrieve userId from refreshToken
+        const userId = jwt_service_1.jwtService.getUserByRefreshToken(req.cookies.refreshToken).userId;
+        //find refreshToken by userId and deviceId
+        const token = yield refreshTokens_repository_db_1.refreshTokensRepository.findTokenByUserIdAndDeviceId(userId, deviceId);
+        //if it doesn't exist throw error
+        if (!token) {
+            return res.status(401).send({ error: 'There is no user with such deviceId' });
+        }
+    }
+    catch (err) {
+        return res.status(401).send({ error: 'Invalid deviceId' });
+    }
+    next();
+});
+exports.deviceIdValidation = deviceIdValidation;

@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.refreshTokensRepository = void 0;
 //(1) all devices
 //(2) create token
-//(3) find token
+//(3) find token by userId and deviceId
 //(4) delete others
 //(5) delete this
 //(6) find by deviceId
@@ -34,11 +34,11 @@ exports.refreshTokensRepository = {
             return result.acknowledged;
         });
     },
-    //(3) method finds refreshToken
-    findUserByToken(token) {
+    //(3) method finds refreshToken by userId and deviceId
+    findTokenByUserIdAndDeviceId(userId, deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield mongodb_1.refreshTokensCollection.findOne({ value: token });
-            return result === null || result === void 0 ? void 0 : result.userId;
+            const result = yield mongodb_1.refreshTokensCollection.findOne({ userId: userId, deviceId: deviceId });
+            return (result === null || result === void 0 ? void 0 : result.userId) ? result.userId : undefined;
         });
     },
     //(4) method delete all tokens by this user  except current

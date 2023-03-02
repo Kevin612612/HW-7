@@ -43,8 +43,8 @@ deviceRouter.delete('/devices',
 
 //delete device
 deviceRouter.delete('/devices/:deviceId',
-    deviceIdValidation,
     checkRefreshToken,
+    deviceIdValidation,
     async (req: Request, res: Response) => {
         //COLLECTION of ERRORS
         const errors = validationResult(req);

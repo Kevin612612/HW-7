@@ -40,7 +40,7 @@ exports.deviceRouter.delete('/devices', authorization_middleware_1.checkRefreshT
     res.status(204).send(allOtherDevices);
 }));
 //delete device
-exports.deviceRouter.delete('/devices/:deviceId', input_validation_middleware_1.deviceIdValidation, authorization_middleware_1.checkRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.deviceRouter.delete('/devices/:deviceId', authorization_middleware_1.checkRefreshToken, input_validation_middleware_1.deviceIdValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //COLLECTION of ERRORS
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {

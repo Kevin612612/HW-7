@@ -7,8 +7,9 @@ import {NextFunction, Request, Response} from "express";
 import {blogsRepository} from "../repositories/blogs-repository-db";
 import {postsRepository} from "../repositories/posts-repository-db";
 import {usersRepository} from "../repositories/users-repository-db";
-import {usersCollection} from "../repositories/mongodb";
+import {blackList, usersCollection} from "../repositories/mongodb";
 import {refreshTokensRepository} from "../repositories/refreshTokens-repository-db";
+import {jwtService} from "../application/jwt-service";
 
 
 //blogs validation
@@ -181,9 +182,32 @@ export const tokenValidation = header('authorization').isJWT()
 
 export const tokenValidation1 = cookie('refreshToken').isJWT()
 
-export const deviceIdValidation = param('deviceId')
-    .custom(async value => {
-        const deviceId = await refreshTokensRepository.findUserByDeviceId(value)
-        if (!deviceId) throw new Error('deviceId doesn\'t exist')
-        return true
-    })
+// export const deviceIdValidation = param('deviceId')
+//     .custom(async value => {
+//         const deviceId = await refreshTokensRepository.findUserByDeviceId(value)
+//         if (!deviceId) throw new Error('deviceId doesn\'t exist')
+//         return true
+//     })
+
+//check deviceId
+export const deviceIdValidation = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        //take the deviceId that should be deleted
+        const deviceId = req.params.deviceId
+        //if it doesn't exist throw error
+        if (!deviceId) {
+            return res.status(404).send({error: 'deviceId is not found'})
+        }
+        //retrieve userId from refreshToken
+        const userId = jwtService.getUserByRefreshToken(req.cookies.refreshToken).userId
+        //find refreshToken by userId and deviceId
+        const token = await refreshTokensRepository.findTokenByUserIdAndDeviceId(userId, deviceId)
+        //if it doesn't exist throw error
+        if (!token) {
+            return res.status(401).send({error: 'There is no user with such deviceId'});
+        }
+    } catch (err) {
+        return res.status(401).send({error: 'Invalid deviceId'});
+    }
+    next();
+}
